@@ -5,13 +5,16 @@ interface OWMCurrentResponse {
   name: string;
   main: {
     temp: number;
+    feels_like: number;
     humidity: number;
   };
   weather: { description: string; icon: string }[];
   wind: { speed: number };
+  sys: { sunrise: number; sunset: number };
 }
 
 interface OWMForecastItem {
+  dt: number;
   dt_txt: string;
   main: {
     temp: number;
@@ -19,6 +22,7 @@ interface OWMForecastItem {
     temp_max: number;
   };
   weather: { icon: string }[];
+  pop: number;
 }
 
 interface OWMForecastResponse {
@@ -48,21 +52,26 @@ export async function fetchWeatherData(lat: number, lon: number): Promise<Weathe
       : current.main.temp;
 
   const hourly: WeatherHourly[] = forecast.list.slice(0, 8).map((item) => ({
+    dt: item.dt,
     time: item.dt_txt.slice(11, 16),
     temp: Math.round(item.main.temp),
     icon: item.weather[0].icon,
+    pop: item.pop,
   }));
 
   return {
     locationName: current.name,
     current: {
       temp: Math.round(current.main.temp),
+      feelsLike: Math.round(current.main.feels_like),
       tempMin: Math.round(tempMin),
       tempMax: Math.round(tempMax),
       description: current.weather[0].description,
       icon: current.weather[0].icon,
       humidity: current.main.humidity,
       windSpeed: current.wind.speed,
+      sunrise: current.sys.sunrise,
+      sunset: current.sys.sunset,
     },
     hourly,
   };
