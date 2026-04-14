@@ -38,7 +38,8 @@ interface OWMReverseGeoItem {
 const DAY_OF_WEEK = ['일', '월', '화', '수', '목', '금', '토'];
 
 function toDateStr(dt: number): string {
-  return new Date(dt * 1000).toISOString().slice(0, 10);
+  const d = new Date(dt * 1000);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
 function toTimeStr(dt: number): string {
@@ -46,14 +47,17 @@ function toTimeStr(dt: number): string {
   return `${String(d.getHours()).padStart(2, '0')}:00`;
 }
 
-function getDayLabel(date: string): string {
-  const todayDate = new Date().toISOString().slice(0, 10);
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const tomorrowDate = tomorrow.toISOString().slice(0, 10);
+function toLocalDateStr(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
 
-  if (date === todayDate) return '오늘';
-  if (date === tomorrowDate) return '내일';
+function getDayLabel(date: string): string {
+  const now = new Date();
+  const tomorrow = new Date(now);
+  tomorrow.setDate(now.getDate() + 1);
+
+  if (date === toLocalDateStr(now)) return '오늘';
+  if (date === toLocalDateStr(tomorrow)) return '내일';
   return DAY_OF_WEEK[new Date(date + 'T12:00:00').getDay()];
 }
 
