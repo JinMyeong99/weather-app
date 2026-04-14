@@ -7,7 +7,7 @@ import { useWeather } from '../../entities/weather/model/useWeather';
 import { useFavorites } from '../../features/favorites/useFavorites';
 import { SearchBar } from '../../widgets/search-bar/SearchBar';
 import { WeatherDetail } from '../../widgets/weather-detail/WeatherDetail';
-import { WeeklyForecast } from '../../widgets/weekly-forecast/WeeklyForecast';
+import { HourlyForecastStrip } from '../../widgets/hourly-forecast/HourlyForecastStrip';
 import { FavoriteList } from '../../widgets/favorite-list/FavoriteList';
 import { LoadingSpinner } from '../../shared/ui/LoadingSpinner';
 import { ErrorMessage } from '../../shared/ui/ErrorMessage';
@@ -122,10 +122,10 @@ export const HomePage = () => {
           {data && <WeatherDetail data={data} />}
         </section>
 
-        {/* 주간예보 */}
+        {/* 시간별 예보 */}
         {data && (
           <section className="mb-6">
-            <WeeklyForecast daily={data.daily} />
+            <HourlyForecastStrip hourly={data.hourly} />
           </section>
         )}
 
