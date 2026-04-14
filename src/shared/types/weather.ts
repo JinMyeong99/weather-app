@@ -19,8 +19,20 @@ export interface WeatherHourly {
   pop: number;      // 강수확률 0~1
 }
 
+export interface WeatherDaily {
+  date: string;      // "2026-04-15"
+  dayLabel: string;  // "오늘" | "내일" | "목" | "금" ...
+  tempMin: number;
+  tempMax: number;
+  amIcon: string;    // 오전 대표 아이콘 코드 (06~11시)
+  pmIcon: string;    // 오후 대표 아이콘 코드 (12~17시)
+  amPop: number;     // 오전 최대 강수확률 0~1
+  pmPop: number;     // 오후 최대 강수확률 0~1
+}
+
 export interface WeatherData {
   locationName: string;
   current: WeatherCurrent;
   hourly: WeatherHourly[];
+  daily: WeatherDaily[];
 }

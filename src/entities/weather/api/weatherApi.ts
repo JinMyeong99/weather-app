@@ -1,6 +1,6 @@
 import { weatherClient } from '../../../shared/api/weatherClient';
 import { WEATHER_DESCRIPTION_KO } from '../../../shared/lib/weatherDescriptionKo';
-import type { WeatherData, WeatherHourly } from '../../../shared/types';
+import type { WeatherData, WeatherHourly, WeatherDaily } from '../../../shared/types';
 
 interface OWMCurrentResponse {
   name: string;
@@ -60,6 +60,48 @@ export async function fetchWeatherData(lat: number, lon: number): Promise<Weathe
     pop: item.pop,
   }));
 
+  // 날짜별 그룹핑 → 주간예보
+  const DAY_OF_WEEK = ['일', '월', '화', '수', '목', '금', '토'];
+  const todayDate = new Date().toISOString().slice(0, 10);
+
+  const groupedByDate = forecast.list.reduce<Record<string, OWMForecastItem[]>>((acc, item) => {
+    const date = item.dt_txt.slice(0, 10);
+    if (!acc[date]) acc[date] = [];
+    acc[date].push(item);
+    return acc;
+  }, {});
+
+  const daily: WeatherDaily[] = Object.entries(groupedByDate).map(([date, items]) => {
+    const amItems = items.filter((i) => { const h = parseInt(i.dt_txt.slice(11, 13)); return h >= 6 && h < 12; });
+    const pmItems = items.filter((i) => { const h = parseInt(i.dt_txt.slice(11, 13)); return h >= 12 && h < 18; });
+    const fallback = [...items].sort((a, b) => b.pop - a.pop);
+
+    const amBest = amItems.sort((a, b) => b.pop - a.pop)[0] ?? fallback[0];
+    const pmBest = pmItems.sort((a, b) => b.pop - a.pop)[0] ?? fallback[0];
+
+    const d = new Date(date + 'T12:00:00');
+    let dayLabel: string;
+    if (date === todayDate) {
+      dayLabel = '오늘';
+    } else {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const tomorrowDate = tomorrow.toISOString().slice(0, 10);
+      dayLabel = date === tomorrowDate ? '내일' : DAY_OF_WEEK[d.getDay()];
+    }
+
+    return {
+      date,
+      dayLabel,
+      tempMin: Math.round(Math.min(...items.map((i) => i.main.temp_min))),
+      tempMax: Math.round(Math.max(...items.map((i) => i.main.temp_max))),
+      amIcon: amBest.weather[0].icon,
+      pmIcon: pmBest.weather[0].icon,
+      amPop: Math.max(...(amItems.length ? amItems : items).map((i) => i.pop)),
+      pmPop: Math.max(...(pmItems.length ? pmItems : items).map((i) => i.pop)),
+    };
+  });
+
   return {
     locationName: current.name,
     current: {
@@ -75,5 +117,6 @@ export async function fetchWeatherData(lat: number, lon: number): Promise<Weathe
       sunset: current.sys.sunset,
     },
     hourly,
+    daily,
   };
 }
