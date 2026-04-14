@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useGeolocation } from '../../features/geolocation/useGeolocation';
 import { useWeather } from '../../entities/weather/model/useWeather';
 import { useFavorites } from '../../features/favorites/useFavorites';
@@ -10,6 +11,7 @@ import { ErrorMessage } from '../../shared/ui/ErrorMessage';
 import type { District } from '../../shared/types';
 
 export const HomePage = () => {
+  const navigate = useNavigate();
   const geo = useGeolocation();
   const [selected, setSelected] = useState<{ lat: number; lon: number; district: District } | null>(null);
 
@@ -57,22 +59,36 @@ export const HomePage = () => {
         </div>
 
         {/* 현재 날씨 */}
-        <section className="mb-6 rounded-2xl bg-white p-5 shadow-sm">
+        <section
+          onClick={() => {
+            if (data && lat !== null && lon !== null) {
+              navigate(`/detail/${btoa(`${lat},${lon}`)}`, {
+                state: { locationName: selected?.district.displayName ?? '현재 위치' },
+              });
+            }
+          }}
+          className={`mb-6 rounded-2xl bg-white p-5 shadow-sm transition ${data ? 'cursor-pointer hover:shadow-md' : ''}`}
+        >
           <div className="mb-2 flex items-center justify-between">
             <p className="text-sm font-medium text-gray-500">
               {selected ? selected.district.displayName : '현재 위치'}
             </p>
-            {data && !alreadyFavorited && (
-              <button
-                onClick={handleAddFavorite}
-                className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-500 hover:bg-blue-100"
-              >
-                + 즐겨찾기
-              </button>
-            )}
-            {data && alreadyFavorited && (
-              <span className="text-xs text-gray-400">즐겨찾기 추가됨</span>
-            )}
+            <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+              {data && !alreadyFavorited && (
+                <button
+                  onClick={handleAddFavorite}
+                  className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-500 hover:bg-blue-100"
+                >
+                  + 즐겨찾기
+                </button>
+              )}
+              {data && alreadyFavorited && (
+                <span className="text-xs text-gray-400">즐겨찾기 추가됨</span>
+              )}
+              {data && (
+                <span className="text-xs text-gray-300">›</span>
+              )}
+            </div>
           </div>
 
           {addError && <ErrorMessage message={addError} />}

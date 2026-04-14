@@ -18,7 +18,9 @@ export function FavoriteCard({ favorite, onRemove, onAliasUpdate }: FavoriteCard
 
   const handleCardClick = () => {
     if (isEditing) return;
-    navigate(`/detail/${btoa(`${favorite.lat},${favorite.lon}`)}`);
+    navigate(`/detail/${btoa(`${favorite.lat},${favorite.lon}`)}`, {
+      state: { locationName: favorite.alias },
+    });
   };
 
   const handleDoubleClick = (e: React.MouseEvent) => {

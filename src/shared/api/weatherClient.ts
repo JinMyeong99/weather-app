@@ -5,6 +5,6 @@ export const weatherClient = axios.create({
   params: {
     appid: import.meta.env.VITE_OPENWEATHER_API_KEY,
     units: 'metric',
-    lang: 'kr',
+    lang: 'ko',
   },
 });
