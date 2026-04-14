@@ -17,15 +17,16 @@ export function FavoriteList({ favorites, onRemove, onAliasUpdate }: FavoriteLis
   }
 
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+    <ul className="flex flex-col gap-3">
       {favorites.map((favorite) => (
-        <FavoriteCard
-          key={favorite.id}
-          favorite={favorite}
-          onRemove={onRemove}
-          onAliasUpdate={onAliasUpdate}
-        />
+        <li key={favorite.id}>
+          <FavoriteCard
+            favorite={favorite}
+            onRemove={onRemove}
+            onAliasUpdate={onAliasUpdate}
+          />
+        </li>
       ))}
-    </div>
+    </ul>
   );
 }

@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWeather } from '../../entities/weather/model/useWeather';
+import { getWeatherIcon } from '../../shared/lib/getWeatherIcon';
 import type { Favorite } from '../../shared/types';
 
 interface FavoriteCardProps {
@@ -18,7 +19,9 @@ export function FavoriteCard({ favorite, onRemove, onAliasUpdate }: FavoriteCard
 
   const handleCardClick = () => {
     if (isEditing) return;
-    navigate(`/detail/${btoa(`${favorite.lat},${favorite.lon}`)}`);
+    navigate(`/detail/${btoa(`${favorite.lat},${favorite.lon}`)}`, {
+      state: { locationName: favorite.alias },
+    });
   };
 
   const handleDoubleClick = (e: React.MouseEvent) => {
@@ -48,56 +51,60 @@ export function FavoriteCard({ favorite, onRemove, onAliasUpdate }: FavoriteCard
   return (
     <div
       onClick={handleCardClick}
-      className="relative flex cursor-pointer flex-col gap-2 rounded-2xl bg-white p-4 shadow-sm transition hover:shadow-md"
+      className="flex cursor-pointer items-center gap-4 rounded-2xl bg-white px-5 py-4 shadow-sm transition hover:shadow-md"
     >
+      {/* 별칭 */}
+      <div className="flex-1 min-w-0" onClick={(e) => isEditing && e.stopPropagation()}>
+        {isEditing ? (
+          <input
+            ref={inputRef}
+            value={alias}
+            onChange={(e) => setAlias(e.target.value)}
+            onBlur={handleAliasConfirm}
+            onKeyDown={handleKeyDown}
+            onClick={(e) => e.stopPropagation()}
+            className="w-full rounded border border-blue-300 px-1 text-sm font-semibold outline-none focus:ring-1 focus:ring-blue-300"
+          />
+        ) : (
+          <p
+            onDoubleClick={handleDoubleClick}
+            className="truncate text-sm font-semibold text-gray-700"
+            title="더블클릭하여 별칭 수정"
+          >
+            {favorite.alias}
+          </p>
+        )}
+        {data && (
+          <p className="mt-0.5 text-xs capitalize text-gray-400">{data.current.description}</p>
+        )}
+      </div>
+
+      {/* 날씨 정보 */}
+      {isLoading && (
+        <p className="text-xs text-gray-400">불러오는 중...</p>
+      )}
+      {data && (
+        <div className="flex flex-shrink-0 items-center gap-3">
+          <span className="text-4xl leading-none" role="img" aria-label={data.current.description}>
+            {getWeatherIcon(data.current.icon)}
+          </span>
+          <div className="text-right">
+            <p className="text-xl font-bold text-gray-800">{data.current.temp}°</p>
+            <p className="text-xs text-gray-400">
+              {data.current.tempMin}° / {data.current.tempMax}°
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* 삭제 버튼 */}
       <button
         onClick={(e) => { e.stopPropagation(); onRemove(favorite.id); }}
-        className="absolute right-3 top-3 text-gray-300 hover:text-red-400"
+        className="flex-shrink-0 text-gray-300 hover:text-red-400"
         aria-label="즐겨찾기 삭제"
       >
         ✕
       </button>
-
-      {isEditing ? (
-        <input
-          ref={inputRef}
-          value={alias}
-          onChange={(e) => setAlias(e.target.value)}
-          onBlur={handleAliasConfirm}
-          onKeyDown={handleKeyDown}
-          onClick={(e) => e.stopPropagation()}
-          className="w-full rounded border border-blue-300 px-1 text-sm font-semibold outline-none focus:ring-1 focus:ring-blue-300"
-        />
-      ) : (
-        <p
-          onDoubleClick={handleDoubleClick}
-          className="truncate pr-5 text-sm font-semibold text-gray-700"
-          title="더블클릭하여 별칭 수정"
-        >
-          {favorite.alias}
-        </p>
-      )}
-
-      {isLoading && (
-        <p className="text-xs text-gray-400">날씨 불러오는 중...</p>
-      )}
-
-      {data && (
-        <>
-          <div className="flex items-center gap-2">
-            <img
-              src={`https://openweathermap.org/img/wn/${data.current.icon}.png`}
-              alt={data.current.description}
-              className="h-10 w-10"
-            />
-            <span className="text-2xl font-bold text-gray-800">{data.current.temp}°</span>
-          </div>
-          <p className="text-xs text-gray-500 capitalize">{data.current.description}</p>
-          <p className="text-xs text-gray-400">
-            최저 {data.current.tempMin}° / 최고 {data.current.tempMax}°
-          </p>
-        </>
-      )}
     </div>
   );
 }

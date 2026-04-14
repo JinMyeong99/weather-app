@@ -1,5 +1,8 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { useGeolocation } from '../../features/geolocation/useGeolocation';
+import { reverseGeocode } from '../../features/geolocation/reverseGeocode';
 import { useWeather } from '../../entities/weather/model/useWeather';
 import { useFavorites } from '../../features/favorites/useFavorites';
 import { SearchBar } from '../../widgets/search-bar/SearchBar';
@@ -10,28 +13,42 @@ import { ErrorMessage } from '../../shared/ui/ErrorMessage';
 import type { District } from '../../shared/types';
 
 export const HomePage = () => {
+  const navigate = useNavigate();
   const geo = useGeolocation();
   const [selected, setSelected] = useState<{ lat: number; lon: number; district: District } | null>(null);
 
   const lat = selected?.lat ?? geo.lat;
   const lon = selected?.lon ?? geo.lon;
 
+  // geolocation 좌표를 한국어 행정구역명으로 변환
+  const { data: geoLocationName } = useQuery({
+    queryKey: ['reverseGeocode', geo.lat, geo.lon],
+    queryFn: () => reverseGeocode(geo.lat!, geo.lon!),
+    enabled: geo.lat !== null && geo.lon !== null && selected === null,
+    staleTime: Infinity,
+  });
+
+  const currentLocationName = selected?.district.displayName ?? geoLocationName ?? '현재 위치';
+
   const { data, isLoading: weatherLoading, isError } = useWeather(lat, lon);
-  const { favorites, isFavorite, addFavorite, removeFavorite, updateAlias } = useFavorites();
+  const { favorites, isFavoriteByCoords, addFavorite, removeFavorite, updateAlias } = useFavorites();
+
+  const getFavoriteByCoords = (lat: number, lon: number) =>
+    favorites.find((f) => f.lat === lat && f.lon === lon);
 
   const [addError, setAddError] = useState<string | null>(null);
 
-  const handleSelect = (lat: number, lon: number, district: District) => {
-    setSelected({ lat, lon, district });
+  const handleSelect = (newLat: number, newLon: number, district: District) => {
+    setSelected({ lat: newLat, lon: newLon, district });
     setAddError(null);
   };
 
   const handleAddFavorite = () => {
     if (!data || lat === null || lon === null) return;
     const district = selected?.district ?? {
-      fullName: data.locationName,
-      displayName: data.locationName,
-      sido: data.locationName,
+      fullName: `${lat},${lon}`,
+      displayName: currentLocationName,
+      sido: currentLocationName,
     };
     try {
       addFavorite(district, lat, lon);
@@ -41,8 +58,17 @@ export const HomePage = () => {
     }
   };
 
-  const currentFullName = selected?.district.fullName ?? geo.lat?.toString() ?? '';
-  const alreadyFavorited = isFavorite(currentFullName);
+  const alreadyFavorited = lat !== null && lon !== null && isFavoriteByCoords(lat, lon);
+
+  const handleToggleFavorite = () => {
+    if (lat === null || lon === null || !data) return;
+    if (alreadyFavorited) {
+      const fav = getFavoriteByCoords(lat, lon);
+      if (fav) removeFavorite(fav.id);
+    } else {
+      handleAddFavorite();
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -57,29 +83,40 @@ export const HomePage = () => {
         </div>
 
         {/* 현재 날씨 */}
-        <section className="mb-6 rounded-2xl bg-white p-5 shadow-sm">
+        <section
+          onClick={() => {
+            if (data && lat !== null && lon !== null) {
+              navigate(`/detail/${btoa(`${lat},${lon}`)}`, {
+                state: { locationName: currentLocationName },
+              });
+            }
+          }}
+          className={`mb-6 rounded-2xl bg-white p-5 shadow-sm transition ${data ? 'cursor-pointer hover:shadow-md' : ''}`}
+        >
           <div className="mb-2 flex items-center justify-between">
-            <p className="text-sm font-medium text-gray-500">
-              {selected ? selected.district.displayName : '현재 위치'}
-            </p>
-            {data && !alreadyFavorited && (
-              <button
-                onClick={handleAddFavorite}
-                className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-500 hover:bg-blue-100"
-              >
-                + 즐겨찾기
-              </button>
-            )}
-            {data && alreadyFavorited && (
-              <span className="text-xs text-gray-400">즐겨찾기 추가됨</span>
-            )}
+            <p className="text-sm font-medium text-gray-500">{currentLocationName}</p>
+            <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+              {data && (
+                <button
+                  onClick={handleToggleFavorite}
+                  className={`text-2xl leading-none transition-colors ${
+                    alreadyFavorited
+                      ? 'text-yellow-400 hover:text-yellow-500'
+                      : 'text-gray-300 hover:text-yellow-400'
+                  }`}
+                  aria-label={alreadyFavorited ? '즐겨찾기 제거' : '즐겨찾기 추가'}
+                >
+                  {alreadyFavorited ? '★' : '☆'}
+                </button>
+              )}
+            </div>
           </div>
 
           {addError && <ErrorMessage message={addError} />}
 
           {geo.loading && !selected && <LoadingSpinner />}
           {geo.error && !selected && <ErrorMessage message={geo.error} />}
-          {(weatherLoading) && <LoadingSpinner />}
+          {weatherLoading && <LoadingSpinner />}
           {isError && <ErrorMessage message="날씨 정보를 불러올 수 없습니다." />}
           {data && <WeatherDetail data={data} />}
         </section>

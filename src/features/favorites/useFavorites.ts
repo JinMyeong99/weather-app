@@ -23,6 +23,9 @@ export function useFavorites() {
   const isFavorite = (fullName: string) =>
     favorites.some((f) => f.district.fullName === fullName);
 
+  const isFavoriteByCoords = (lat: number, lon: number) =>
+    favorites.some((f) => f.lat === lat && f.lon === lon);
+
   const addFavorite = (district: District, lat: number, lon: number) => {
     if (favorites.length >= MAX_FAVORITES) {
       throw new Error(`즐겨찾기는 최대 ${MAX_FAVORITES}개까지 추가할 수 있습니다.`);
@@ -57,5 +60,5 @@ export function useFavorites() {
     saveToStorage(updated);
   };
 
-  return { favorites, isFavorite, addFavorite, removeFavorite, updateAlias };
+  return { favorites, isFavorite, isFavoriteByCoords, addFavorite, removeFavorite, updateAlias };
 }
