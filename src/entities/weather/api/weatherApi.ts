@@ -1,4 +1,5 @@
 import { weatherClient } from '../../../shared/api/weatherClient';
+import { WEATHER_DESCRIPTION_KO } from '../../../shared/lib/weatherDescriptionKo';
 import type { WeatherData, WeatherHourly } from '../../../shared/types';
 
 interface OWMCurrentResponse {
@@ -8,7 +9,7 @@ interface OWMCurrentResponse {
     feels_like: number;
     humidity: number;
   };
-  weather: { description: string; icon: string }[];
+  weather: { id: number; description: string; icon: string }[];
   wind: { speed: number };
   sys: { sunrise: number; sunset: number };
 }
@@ -66,7 +67,7 @@ export async function fetchWeatherData(lat: number, lon: number): Promise<Weathe
       feelsLike: Math.round(current.main.feels_like),
       tempMin: Math.round(tempMin),
       tempMax: Math.round(tempMax),
-      description: current.weather[0].description,
+      description: WEATHER_DESCRIPTION_KO[current.weather[0].id] ?? current.weather[0].description,
       icon: current.weather[0].icon,
       humidity: current.main.humidity,
       windSpeed: current.wind.speed,
