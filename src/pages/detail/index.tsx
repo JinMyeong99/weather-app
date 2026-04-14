@@ -1,4 +1,5 @@
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { getWeatherIcon } from '../../shared/lib/getWeatherIcon';
 import { useWeather } from '../../entities/weather/model/useWeather';
 import { WeatherDetail } from '../../widgets/weather-detail/WeatherDetail';
 import { LoadingSpinner } from '../../shared/ui/LoadingSpinner';
@@ -120,11 +121,9 @@ export const DetailPage = () => {
                         </div>
 
                         {/* 아이콘 */}
-                        <img
-                          src={`https://openweathermap.org/img/wn/${item.icon}.png`}
-                          alt=""
-                          className="h-8 w-8 flex-shrink-0"
-                        />
+                        <span className="text-2xl leading-none flex-shrink-0" role="img" aria-hidden>
+                          {getWeatherIcon(item.icon)}
+                        </span>
 
                         {/* 강수확률 */}
                         <div className="flex flex-1 items-center gap-1">

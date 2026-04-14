@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWeather } from '../../entities/weather/model/useWeather';
+import { getWeatherIcon } from '../../shared/lib/getWeatherIcon';
 import type { Favorite } from '../../shared/types';
 
 interface FavoriteCardProps {
@@ -84,11 +85,9 @@ export function FavoriteCard({ favorite, onRemove, onAliasUpdate }: FavoriteCard
       )}
       {data && (
         <div className="flex flex-shrink-0 items-center gap-3">
-          <img
-            src={`https://openweathermap.org/img/wn/${data.current.icon}.png`}
-            alt={data.current.description}
-            className="h-10 w-10"
-          />
+          <span className="text-4xl leading-none" role="img" aria-label={data.current.description}>
+            {getWeatherIcon(data.current.icon)}
+          </span>
           <div className="text-right">
             <p className="text-xl font-bold text-gray-800">{data.current.temp}°</p>
             <p className="text-xs text-gray-400">

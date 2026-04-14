@@ -1,4 +1,5 @@
 import type { WeatherData } from '../../shared/types';
+import { getWeatherIcon } from '../../shared/lib/getWeatherIcon';
 
 interface WeatherDetailProps {
   data: WeatherData;
@@ -19,11 +20,9 @@ export function WeatherDetail({ data }: WeatherDetailProps) {
     <div className="flex flex-col gap-3">
       {/* 기온 + 아이콘 */}
       <div className="flex items-center gap-3">
-        <img
-          src={`https://openweathermap.org/img/wn/${current.icon}@2x.png`}
-          alt={current.description}
-          className="h-16 w-16"
-        />
+        <span className="text-6xl leading-none" role="img" aria-label={current.description}>
+          {getWeatherIcon(current.icon)}
+        </span>
         <div>
           <p className="text-5xl font-bold text-gray-800">{current.temp}°</p>
           <p className="mt-0.5 text-sm capitalize text-gray-500">{current.description}</p>
