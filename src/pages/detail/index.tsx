@@ -2,6 +2,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { getWeatherIcon } from '../../shared/lib/getWeatherIcon';
 import { useWeather } from '../../entities/weather/model/useWeather';
 import { WeatherDetail } from '../../widgets/weather-detail/WeatherDetail';
+import { WeeklyForecast } from '../../widgets/weekly-forecast/WeeklyForecast';
 import { LoadingSpinner } from '../../shared/ui/LoadingSpinner';
 import { ErrorMessage } from '../../shared/ui/ErrorMessage';
 import type { WeatherHourly } from '../../shared/types';
@@ -143,6 +144,11 @@ export const DetailPage = () => {
                   );
                 })}
               </ul>
+            </section>
+
+            {/* 주간예보 */}
+            <section className="mt-4">
+              <WeeklyForecast daily={data.daily} />
             </section>
           </>
         )}
