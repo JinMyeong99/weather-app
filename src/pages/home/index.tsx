@@ -6,7 +6,7 @@ import { reverseGeocode } from '../../features/geolocation/reverseGeocode';
 import { useWeather } from '../../entities/weather/model/useWeather';
 import { useFavorites } from '../../features/favorites/useFavorites';
 import { SearchBar } from '../../widgets/search-bar/SearchBar';
-import { WeatherDetail } from '../../widgets/weather-detail/WeatherDetail';
+import { WeatherCard } from '../../widgets/weather-card/WeatherCard';
 import { HourlyForecastStrip } from '../../widgets/hourly-forecast/HourlyForecastStrip';
 import { FavoriteList } from '../../widgets/favorite-list/FavoriteList';
 import { LoadingSpinner } from '../../shared/ui/LoadingSpinner';
@@ -32,43 +32,10 @@ export const HomePage = () => {
   const currentLocationName = selected?.district.displayName ?? geoLocationName ?? '현재 위치';
 
   const { data, isLoading: weatherLoading, isError } = useWeather(lat, lon);
-  const { favorites, isFavoriteByCoords, addFavorite, removeFavorite, updateAlias } = useFavorites();
-
-  const getFavoriteByCoords = (lat: number, lon: number) =>
-    favorites.find((f) => f.lat === lat && f.lon === lon);
-
-  const [addError, setAddError] = useState<string | null>(null);
+  const { favorites, removeFavorite, updateAlias } = useFavorites();
 
   const handleSelect = (newLat: number, newLon: number, district: District) => {
     setSelected({ lat: newLat, lon: newLon, district });
-    setAddError(null);
-  };
-
-  const handleAddFavorite = () => {
-    if (!data || lat === null || lon === null) return;
-    const district = selected?.district ?? {
-      fullName: `${lat},${lon}`,
-      displayName: currentLocationName,
-      sido: currentLocationName,
-    };
-    try {
-      addFavorite(district, lat, lon);
-      setAddError(null);
-    } catch (e) {
-      setAddError((e as Error).message);
-    }
-  };
-
-  const alreadyFavorited = lat !== null && lon !== null && isFavoriteByCoords(lat, lon);
-
-  const handleToggleFavorite = () => {
-    if (lat === null || lon === null || !data) return;
-    if (alreadyFavorited) {
-      const fav = getFavoriteByCoords(lat, lon);
-      if (fav) removeFavorite(fav.id);
-    } else {
-      handleAddFavorite();
-    }
   };
 
   return (
@@ -84,43 +51,32 @@ export const HomePage = () => {
         </div>
 
         {/* 현재 날씨 */}
-        <section
-          onClick={() => {
-            if (data && lat !== null && lon !== null) {
+        {(geo.loading && !selected) || weatherLoading ? (
+          <div className="mb-6 rounded-2xl bg-white p-5 shadow-sm">
+            <LoadingSpinner />
+          </div>
+        ) : geo.error && !selected ? (
+          <div className="mb-6 rounded-2xl bg-white p-5 shadow-sm">
+            <ErrorMessage message={geo.error} />
+          </div>
+        ) : isError ? (
+          <div className="mb-6 rounded-2xl bg-white p-5 shadow-sm">
+            <ErrorMessage message="날씨 정보를 불러올 수 없습니다." />
+          </div>
+        ) : data && lat !== null && lon !== null ? (
+          <WeatherCard
+            className="mb-6"
+            locationName={currentLocationName}
+            data={data}
+            lat={lat}
+            lon={lon}
+            onClick={() =>
               navigate(`/detail/${btoa(`${lat},${lon}`)}`, {
                 state: { locationName: currentLocationName },
-              });
+              })
             }
-          }}
-          className={`mb-6 rounded-2xl bg-white p-5 shadow-sm transition ${data ? 'cursor-pointer hover:shadow-md' : ''}`}
-        >
-          <div className="mb-2 flex items-center justify-between">
-            <p className="text-sm font-medium text-gray-500">{currentLocationName}</p>
-            <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-              {data && (
-                <button
-                  onClick={handleToggleFavorite}
-                  className={`text-2xl leading-none transition-colors ${
-                    alreadyFavorited
-                      ? 'text-yellow-400 hover:text-yellow-500'
-                      : 'text-gray-300 hover:text-yellow-400'
-                  }`}
-                  aria-label={alreadyFavorited ? '즐겨찾기 제거' : '즐겨찾기 추가'}
-                >
-                  {alreadyFavorited ? '★' : '☆'}
-                </button>
-              )}
-            </div>
-          </div>
-
-          {addError && <ErrorMessage message={addError} />}
-
-          {geo.loading && !selected && <LoadingSpinner />}
-          {geo.error && !selected && <ErrorMessage message={geo.error} />}
-          {weatherLoading && <LoadingSpinner />}
-          {isError && <ErrorMessage message="날씨 정보를 불러올 수 없습니다." />}
-          {data && <WeatherDetail data={data} />}
-        </section>
+          />
+        ) : null}
 
         {/* 시간별 예보 */}
         {data && (
