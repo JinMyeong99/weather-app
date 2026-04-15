@@ -10,7 +10,7 @@ function IconWithPop({ icon, pop }: { icon: string; pop: number }) {
     <div className="flex items-center justify-center">
       <span className="w-8" />
       <span className="text-xl leading-none">{getWeatherIcon(icon)}</span>
-      <span className="w-8 text-left text-xs text-blue-400">
+      <span className="w-8 text-left text-xs text-blue-400 pl-1.5">
         {pop > 0 ? `${Math.round(pop * 100)}%` : ''}
       </span>
     </div>

@@ -14,6 +14,7 @@ interface OWMOneCallResponse {
     visibility: number;
     wind_speed: number;
     wind_deg: number;
+    uvi: number;
     weather: { id: number; description: string; icon: string }[];
   };
   hourly: Array<{
@@ -27,6 +28,15 @@ interface OWMOneCallResponse {
     temp: { min: number; max: number };
     weather: { icon: string }[];
     pop: number;
+  }>;
+}
+
+interface OWMAirPollutionResponse {
+  list: Array<{
+    components: {
+      pm2_5: number;
+      pm10: number;
+    };
   }>;
 }
 
@@ -62,18 +72,25 @@ function getDayLabel(date: string): string {
 }
 
 export async function fetchWeatherData(lat: number, lon: number): Promise<WeatherData> {
-  const [oneCallRes, geoRes] = await Promise.all([
+  const [oneCallRes, geoRes, airRes] = await Promise.all([
     weatherClient.get<OWMOneCallResponse>('/data/3.0/onecall', {
       params: { lat, lon, exclude: 'minutely,alerts' },
     }),
     weatherClient.get<OWMReverseGeoItem[]>('/geo/1.0/reverse', {
       params: { lat, lon, limit: 1 },
     }),
+    weatherClient.get<OWMAirPollutionResponse>('/data/2.5/air_pollution', {
+      params: { lat, lon },
+    }),
   ]);
 
   const oc = oneCallRes.data;
   const geoItem = geoRes.data[0];
   const locationName = geoItem?.local_names?.ko ?? geoItem?.name ?? '알 수 없음';
+
+  const airComponents = airRes.data.list[0]?.components;
+  const pm10 = Math.round(airComponents?.pm10 ?? 0);
+  const pm25 = Math.round(airComponents?.pm2_5 ?? 0);
 
   // hourly: 현재 시각 항목 prepend
   const nowEpoch = Math.floor(Date.now() / 1000);
@@ -155,6 +172,9 @@ export async function fetchWeatherData(lat: number, lon: number): Promise<Weathe
       windSpeed: oc.current.wind_speed,
       sunrise: oc.current.sunrise,
       sunset: oc.current.sunset,
+      uvi: Math.round(oc.current.uvi),
+      pm10,
+      pm25,
     },
     hourly,
     daily,

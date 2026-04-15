@@ -47,7 +47,7 @@ export function WeatherCard({ locationName, data, lat, lon, onClick, className =
       } ${className}`}
     >
       <div className="mb-2 flex items-center justify-between">
-        <p className="text-sm font-medium text-gray-500">{locationName}</p>
+        <p className="text-lg font-bold text-gray-800">{locationName}</p>
         <button
           onClick={handleToggleFavorite}
           className={`text-2xl leading-none transition-colors ${
