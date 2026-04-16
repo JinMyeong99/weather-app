@@ -14,10 +14,25 @@ async function geocodeQuery(query: string): Promise<GeocodingResult | null> {
   return res.data[0] ?? null;
 }
 
+function getDistrictGeocodeCandidates(district: District): string[] {
+  const fullAdministrativeName = [district.dong, district.sigungu, district.sido]
+    .filter(Boolean)
+    .join(', ');
+  const cityAdministrativeName = [district.sigungu, district.sido]
+    .filter(Boolean)
+    .join(', ');
+
+  return Array.from(new Set([
+    fullAdministrativeName,
+    cityAdministrativeName,
+    district.sido,
+  ].filter(Boolean)));
+}
+
 export async function geocodeDistrict(
   district: District,
 ): Promise<{ lat: number; lon: number } | null> {
-  const candidates = [district.dong, district.sigungu, district.sido].filter(Boolean) as string[];
+  const candidates = getDistrictGeocodeCandidates(district);
 
   for (const candidate of candidates) {
     const result = await geocodeQuery(candidate);
