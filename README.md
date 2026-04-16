@@ -1,5 +1,7 @@
 # Weather App
 
+**🌐 배포:** https://weather-app-snowy-nine-96.vercel.app/
+
 OpenWeather API를 활용한 React 날씨 앱입니다. 현재 위치 또는 한국 행정구역 검색으로 날씨를 확인하고, 자주 보는 지역을 즐겨찾기로 저장할 수 있습니다.
 
 ## 주요 기능
