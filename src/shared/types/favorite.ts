@@ -1,5 +1,6 @@
 export interface Favorite {
   id: string;
+  key?: string;
   alias: string;
   district: {
     fullName: string;

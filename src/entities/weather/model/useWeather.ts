@@ -4,7 +4,13 @@ import { fetchWeatherData } from '../api/weatherApi';
 export function useWeather(lat: number | null, lon: number | null) {
   return useQuery({
     queryKey: ['weather', lat, lon],
-    queryFn: () => fetchWeatherData(lat!, lon!),
+    queryFn: () => {
+      if (lat === null || lon === null) {
+        throw new Error('날씨 조회에 필요한 좌표가 없습니다.');
+      }
+
+      return fetchWeatherData(lat, lon);
+    },
     enabled: lat !== null && lon !== null,
     staleTime: 1000 * 60 * 5,
   });
