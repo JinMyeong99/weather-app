@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useGeolocation } from '../../features/geolocation/useGeolocation';
@@ -7,19 +7,22 @@ import { useWeather } from '../../entities/weather/model/useWeather';
 import { useFavorites } from '../../features/favorites/useFavorites';
 import { SearchBar } from '../../widgets/search-bar/SearchBar';
 import { WeatherCard } from '../../widgets/weather-card/WeatherCard';
+import { WeatherCardPlaceholder } from '../../widgets/weather-card/WeatherCardPlaceholder';
 import { HourlyForecastStrip } from '../../widgets/hourly-forecast/HourlyForecastStrip';
 import { FavoriteList } from '../../widgets/favorite-list/FavoriteList';
-import { LoadingSpinner } from '../../shared/ui/LoadingSpinner';
 import { ErrorMessage } from '../../shared/ui/ErrorMessage';
 import { getWeatherTheme } from '../../shared/lib/getWeatherTheme';
+import { getCachedWeatherIcon, setCachedWeatherIcon } from '../../shared/lib/weatherThemeCache';
 import { useDevWeather } from '../../shared/lib/useDevWeather';
 import { WeatherAnimation } from '../../shared/ui/WeatherAnimation';
 import type { District } from '../../shared/types';
+import { HomePagePlaceholder, HourlyForecastPlaceholder } from './HomePagePlaceholder';
 
 export const HomePage = () => {
   const navigate = useNavigate();
   const geo = useGeolocation();
   const [selected, setSelected] = useState<{ lat: number; lon: number; district: District } | null>(null);
+  const [isResolvingSearchLocation, setIsResolvingSearchLocation] = useState(false);
 
   const lat = selected?.lat ?? geo.lat;
   const lon = selected?.lon ?? geo.lon;
@@ -42,22 +45,38 @@ export const HomePage = () => {
 
   const { data, isLoading: weatherLoading, isError } = useWeather(lat, lon);
   const { favorites, removeFavorite, updateAlias } = useFavorites();
+  const [transitionWeatherIcon, setTransitionWeatherIcon] = useState<string | null>(null);
+  const [cachedWeatherIcon] = useState(() => getCachedWeatherIcon());
+  const currentWeatherIcon = data?.current.icon;
+
+  useEffect(() => {
+    if (currentWeatherIcon) {
+      setCachedWeatherIcon(currentWeatherIcon);
+    }
+  }, [currentWeatherIcon]);
 
   const { mockIcon } = useDevWeather();
-  const weatherIcon = mockIcon ?? data?.current.icon ?? '01d';
+  const weatherIcon = mockIcon ?? currentWeatherIcon ?? transitionWeatherIcon ?? cachedWeatherIcon ?? '01d';
   const { gradient, isDark } = getWeatherTheme(weatherIcon);
+  const isWeatherLoading = (geo.loading && !selected) || weatherLoading || isResolvingSearchLocation;
+  const isInitialLoading = isWeatherLoading && !data;
 
   const handleSelect = (newLat: number, newLon: number, district: District) => {
+    setTransitionWeatherIcon(currentWeatherIcon ?? transitionWeatherIcon);
     setSelected({ lat: newLat, lon: newLon, district });
   };
 
   const handleCurrentLocation = () => {
+    setTransitionWeatherIcon(currentWeatherIcon ?? transitionWeatherIcon);
     setSelected(null);
   };
 
   return (
     <div className={`min-h-screen ${gradient} transition-colors duration-500`}>
       <WeatherAnimation icon={weatherIcon} />
+      {isInitialLoading ? (
+        <HomePagePlaceholder />
+      ) : (
       <div className="relative z-10 mx-auto max-w-2xl px-4 py-8">
 
         {/* 헤더 */}
@@ -65,14 +84,20 @@ export const HomePage = () => {
 
         {/* 검색 */}
         <div className="mb-6">
-          <SearchBar onSelect={handleSelect} onCurrentLocation={handleCurrentLocation} />
+          <SearchBar
+            onSelect={handleSelect}
+            onCurrentLocation={handleCurrentLocation}
+            onSearchingChange={setIsResolvingSearchLocation}
+          />
         </div>
 
         {/* 현재 날씨 */}
-        {(geo.loading && !selected) || weatherLoading ? (
-          <div className="mb-6 rounded-2xl bg-white p-5 shadow-sm">
-            <LoadingSpinner />
-          </div>
+        {isWeatherLoading ? (
+          <WeatherCardPlaceholder
+            className="mb-6"
+            locationName={currentLocationName}
+            showMore
+          />
         ) : geo.error && !selected ? (
           <div className="mb-6 rounded-2xl bg-white p-5 shadow-sm">
             <ErrorMessage message={geo.error} />
@@ -91,18 +116,24 @@ export const HomePage = () => {
             district={selected?.district}
             onClick={() =>
               navigate(`/detail/${btoa(`${lat},${lon}`)}`, {
-                state: { locationName: currentLocationName, district: selected?.district },
+                state: {
+                  locationName: currentLocationName,
+                  district: selected?.district,
+                  weatherIcon: data.current.icon,
+                },
               })
             }
           />
         ) : null}
 
         {/* 시간별 예보 */}
-        {data && (
+        {isWeatherLoading && data ? (
+          <HourlyForecastPlaceholder />
+        ) : data ? (
           <section className="mb-6">
             <HourlyForecastStrip hourly={data.hourly} />
           </section>
-        )}
+        ) : null}
 
         {/* 즐겨찾기 */}
         <section>
@@ -115,6 +146,7 @@ export const HomePage = () => {
         </section>
 
       </div>
+      )}
     </div>
   );
 };

@@ -4,6 +4,7 @@ import type { District } from '../../shared/types';
 interface SearchBarProps {
   onSelect: (lat: number, lon: number, district: District) => void;
   onCurrentLocation?: () => void;
+  onSearchingChange?: (isSearching: boolean) => void;
 }
 
 function SearchIcon() {
@@ -46,12 +47,11 @@ function CurrentLocationIcon() {
   );
 }
 
-export function SearchBar({ onSelect, onCurrentLocation }: SearchBarProps) {
+export function SearchBar({ onSelect, onCurrentLocation, onSearchingChange }: SearchBarProps) {
   const {
     containerRef,
     inputValue,
     isOpen,
-    loading,
     notFound,
     results,
     showLocationTooltip,
@@ -60,7 +60,7 @@ export function SearchBar({ onSelect, onCurrentLocation }: SearchBarProps) {
     handleCurrentLocationClick,
     openResultsIfAvailable,
     setShowLocationTooltip,
-  } = useSearchBarController({ onSelect, onCurrentLocation });
+  } = useSearchBarController({ onSelect, onCurrentLocation, onSearchingChange });
 
   return (
     <div ref={containerRef} className="relative z-30 w-full">
@@ -106,10 +106,6 @@ export function SearchBar({ onSelect, onCurrentLocation }: SearchBarProps) {
           </div>
         )}
       </div>
-
-      {loading && (
-        <p className="mt-1 text-xs text-gray-400">위치 정보를 가져오는 중...</p>
-      )}
 
       {notFound && (
         <p className="mt-1 text-xs text-red-400">해당 장소의 정보가 제공되지 않습니다.</p>
