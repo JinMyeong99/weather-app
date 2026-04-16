@@ -5,6 +5,10 @@ import { HourlyForecastStrip } from '../../widgets/hourly-forecast/HourlyForecas
 import { WeeklyForecast } from '../../widgets/weekly-forecast/WeeklyForecast';
 import { LoadingSpinner } from '../../shared/ui/LoadingSpinner';
 import { ErrorMessage } from '../../shared/ui/ErrorMessage';
+import { getWeatherTheme } from '../../shared/lib/getWeatherTheme';
+import { useDevWeather } from '../../shared/lib/useDevWeather';
+import { WeatherAnimation } from '../../shared/ui/WeatherAnimation';
+import type { District } from '../../shared/types';
 
 function parseLocationId(locationId: string): { lat: number; lon: number } | null {
   try {
@@ -20,42 +24,49 @@ function parseLocationId(locationId: string): { lat: number; lon: number } | nul
 export const DetailPage = () => {
   const { locationId = '' } = useParams<{ locationId: string }>();
   const navigate = useNavigate();
-  const { state } = useLocation() as { state: { locationName?: string } | null };
+  const { state } = useLocation() as { state: { locationName?: string; district?: District } | null };
 
   const coords = parseLocationId(locationId);
   const { data, isLoading, isError } = useWeather(coords?.lat ?? null, coords?.lon ?? null);
 
   const locationName = state?.locationName ?? data?.locationName ?? '날씨 상세';
 
+  const { mockIcon } = useDevWeather();
+  const weatherIcon = mockIcon ?? data?.current.icon ?? '01d';
+  const { gradient, isDark } = getWeatherTheme(weatherIcon);
+  const canShowWeather = coords !== null && data !== undefined;
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="mx-auto max-w-2xl px-4 py-8">
+    <div className={`min-h-screen ${gradient} transition-colors duration-500`}>
+      <WeatherAnimation icon={weatherIcon} />
+      <div className="relative z-10 mx-auto max-w-2xl px-4 py-8">
 
         {/* 헤더 */}
         <div className="mb-6 flex items-center gap-3">
           <button
             onClick={() => navigate(-1)}
-            className="rounded-full p-2 text-gray-500 hover:bg-gray-100"
+            className={`rounded-full p-2 transition-colors ${isDark ? 'text-white/80 hover:bg-white/10' : 'text-slate-500 hover:bg-slate-100'}`}
             aria-label="뒤로가기"
           >
             ←
           </button>
-          <h1 className="text-xl font-bold text-gray-800">{locationName}</h1>
+          <h1 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-slate-800'}`}>{locationName}</h1>
         </div>
 
         {!coords && <ErrorMessage message="잘못된 위치 정보입니다." />}
         {isLoading && <LoadingSpinner />}
         {isError && <ErrorMessage message="날씨 정보를 불러올 수 없습니다." />}
 
-        {data && (
+        {canShowWeather && (
           <>
             {/* 현재 날씨 */}
             <WeatherCard
               className="mb-6"
               locationName={locationName}
               data={data}
-              lat={coords!.lat}
-              lon={coords!.lon}
+              lat={coords.lat}
+              lon={coords.lon}
+              district={state?.district}
             />
 
             {/* 시간별 예보 */}
