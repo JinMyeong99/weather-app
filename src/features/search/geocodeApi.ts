@@ -1,43 +1,70 @@
-import { weatherClient } from '../../shared/api/weatherClient';
+import { kakaoClient } from '../../shared/api/kakaoClient';
+import { KakaoAddressSearchSchema } from '../../shared/api/kakaoLocalSchemas';
 import type { District } from '../../shared/types';
 
-interface GeocodingResult {
-  lat: number;
-  lon: number;
-  name: string;
+function isNonEmptyString(value: string | undefined): value is string {
+  return Boolean(value);
 }
 
-async function geocodeQuery(query: string): Promise<GeocodingResult | null> {
-  const res = await weatherClient.get<GeocodingResult[]>('/geo/1.0/direct', {
-    params: { q: `${query},KR`, limit: 1 },
+interface Coordinates {
+  lat: number;
+  lon: number;
+}
+
+async function geocodeQuery(query: string): Promise<Coordinates | null> {
+  const res = await kakaoClient.get<unknown>('/v2/local/search/address.json', {
+    params: { query, analyze_type: 'similar', size: 5 },
   });
-  return res.data[0] ?? null;
+  const result = KakaoAddressSearchSchema.safeParse(res.data);
+
+  if (!result.success) {
+    if (import.meta.env.DEV) {
+      console.warn('[Zod] Kakao address search 응답 검증 실패:', result.error.message);
+    }
+    return null;
+  }
+
+  const document = result.data.documents[0];
+  if (!document) return null;
+
+  return {
+    lat: Number(document.y),
+    lon: Number(document.x),
+  };
 }
 
 function getDistrictGeocodeCandidates(district: District): string[] {
-  const fullAdministrativeName = [district.dong, district.sigungu, district.sido]
+  const fullAdministrativeName = [district.sido, district.sigungu, district.dong]
     .filter(Boolean)
-    .join(', ');
-  const cityAdministrativeName = [district.sigungu, district.sido]
+    .join(' ');
+  const cityAdministrativeName = [district.sigungu, district.dong]
     .filter(Boolean)
-    .join(', ');
+    .join(' ');
 
   return Array.from(new Set([
     fullAdministrativeName,
     cityAdministrativeName,
+    district.dong,
+    district.sigungu,
     district.sido,
-  ].filter(Boolean)));
+  ].filter(isNonEmptyString)));
 }
 
 export async function geocodeDistrict(
   district: District,
-): Promise<{ lat: number; lon: number } | null> {
+): Promise<Coordinates | null> {
   const candidates = getDistrictGeocodeCandidates(district);
 
-  for (const candidate of candidates) {
-    const result = await geocodeQuery(candidate);
-    if (result) {
-      return { lat: result.lat, lon: result.lon };
+  try {
+    for (const candidate of candidates) {
+      const result = await geocodeQuery(candidate);
+      if (result) {
+        return result;
+      }
+    }
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      console.warn('[Kakao] 지역 좌표 변환 실패:', error);
     }
   }
 
