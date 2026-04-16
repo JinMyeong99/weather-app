@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { WeatherCard } from './WeatherCard';
 import type { WeatherData } from '../../shared/types';
 

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { FavoriteListEmpty } from './FavoriteListEmpty';
 
 const meta: Meta<typeof FavoriteListEmpty> = {
