@@ -2,7 +2,7 @@
 
 **🌐 배포:** https://weather-app-snowy-nine-96.vercel.app/
 
-OpenWeather API를 활용한 React 날씨 앱입니다. 현재 위치 또는 한국 행정구역 검색으로 날씨를 확인하고, 자주 보는 지역을 즐겨찾기로 저장할 수 있습니다.
+OpenWeather API와 Kakao Local API를 활용한 React 날씨 앱입니다. 현재 위치 또는 한국 행정구역 검색으로 날씨를 확인하고, 자주 보는 지역을 즐겨찾기로 저장할 수 있습니다.
 
 ## 주요 기능
 
@@ -23,7 +23,8 @@ OpenWeather API를 활용한 React 날씨 앱입니다. 현재 위치 또는 한
 - TanStack Query
 - Zustand
 - Axios
-- OpenWeather One Call / Geocoding / Air Pollution API
+- OpenWeather One Call / Air Pollution API
+- Kakao Local API
 
 ## 실행 방법
 
@@ -33,11 +34,14 @@ cp .env.example .env
 npm run dev
 ```
 
-`.env`에 OpenWeather API 키를 설정합니다.
+`.env`에 OpenWeather API 키와 Kakao REST API 키를 설정합니다.
 
 ```env
 VITE_OPENWEATHER_API_KEY=your_openweather_api_key
+VITE_KAKAO_REST_API_KEY=your_kakao_rest_api_key
 ```
+
+Kakao Local API 사용을 위해 Kakao Developers에서 카카오맵 사용 설정을 켜고, 로컬/배포 도메인을 Web 플랫폼에 등록해야 합니다.
 
 ## 검증 명령
 
@@ -48,13 +52,15 @@ npm run build
 
 ## 구현 포인트
 
-- API 요청은 `weatherClient`에서 공통 파라미터(`appid`, `units`, `lang`)를 주입합니다.
+- 날씨 데이터는 OpenWeather One Call / Air Pollution API에서 가져오고, 한국 지역 검색과 현재 위치명 변환은 Kakao Local API를 사용합니다.
+- OpenWeather 요청은 `weatherClient`에서 공통 파라미터(`appid`, `units`, `lang`)를 주입합니다.
+- Kakao Local 요청은 `kakaoClient`에서 REST API 키 인증 헤더를 주입합니다.
+- 외부 API 응답은 Zod schema로 런타임 검증한 뒤 앱 내부 데이터로 변환합니다.
 - 날씨 데이터는 TanStack Query로 캐싱하고, 즐겨찾기는 Zustand persist로 localStorage에 저장합니다.
 - 배경 효과는 DOM 파티클 대신 Canvas와 `requestAnimationFrame`으로 렌더링합니다.
 - 개발용 날씨 preset 패널과 React Query Devtools는 개발 환경에서만 노출합니다.
 
 ## 알려진 제한사항
 
-- 지역 검색은 한국 행정구역 데이터를 기준으로 합니다.
-- OpenWeather Geocoding 결과에 의존하므로 일부 동명이 지역은 외부 API 응답 품질의 영향을 받을 수 있습니다.
+- 지역 검색 후보는 한국 행정구역 데이터를 기준으로 하고, 좌표 변환은 Kakao Local API 응답 품질의 영향을 받을 수 있습니다.
 - 브라우저에서 위치 권한을 거부하면 검색으로 지역을 선택해야 합니다.
