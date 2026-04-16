@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWeather } from '../../entities/weather/model/useWeather';
 import { getWeatherIcon } from '../../shared/lib/getWeatherIcon';
+import { Skeleton } from '../../shared/ui/Skeleton';
 import type { Favorite } from '../../shared/types';
 
 interface FavoriteCardProps {
@@ -20,7 +21,7 @@ export function FavoriteCard({ favorite, onRemove, onAliasUpdate }: FavoriteCard
   const handleCardClick = () => {
     if (isEditing) return;
     navigate(`/detail/${btoa(`${favorite.lat},${favorite.lon}`)}`, {
-      state: { locationName: favorite.alias },
+      state: { locationName: favorite.alias, district: favorite.district },
     });
   };
 
@@ -81,17 +82,25 @@ export function FavoriteCard({ favorite, onRemove, onAliasUpdate }: FavoriteCard
 
       {/* 날씨 정보 */}
       {isLoading && (
-        <p className="text-xs text-gray-400">불러오는 중...</p>
+        <div className="flex shrink-0 items-center gap-3">
+          <Skeleton className="h-10 w-10 rounded-full" />
+          <div className="flex flex-col items-end gap-1.5">
+            <Skeleton className="h-5 w-10" />
+            <Skeleton className="h-3 w-14" />
+          </div>
+        </div>
       )}
       {data && (
-        <div className="flex flex-shrink-0 items-center gap-3">
+        <div className="flex shrink-0 items-center gap-3">
           <span className="text-4xl leading-none" role="img" aria-label={data.current.description}>
             {getWeatherIcon(data.current.icon)}
           </span>
           <div className="text-right">
             <p className="text-xl font-bold text-gray-800">{data.current.temp}°</p>
-            <p className="text-xs text-gray-400">
-              {data.current.tempMin}° / {data.current.tempMax}°
+            <p className="text-xs">
+              <span className="text-blue-400">{data.current.tempMin}°</span>
+              <span className="mx-0.5 text-gray-300">/</span>
+              <span className="text-red-400">{data.current.tempMax}°</span>
             </p>
           </div>
         </div>
@@ -100,7 +109,7 @@ export function FavoriteCard({ favorite, onRemove, onAliasUpdate }: FavoriteCard
       {/* 삭제 버튼 */}
       <button
         onClick={(e) => { e.stopPropagation(); onRemove(favorite.id); }}
-        className="flex-shrink-0 text-gray-300 hover:text-red-400"
+        className="shrink-0 text-gray-300 hover:text-red-400"
         aria-label="즐겨찾기 삭제"
       >
         ✕

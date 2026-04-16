@@ -1,4 +1,5 @@
 import { FavoriteCard } from './FavoriteCard';
+import { FavoriteListEmpty } from './FavoriteListEmpty';
 import type { Favorite } from '../../shared/types';
 
 interface FavoriteListProps {
@@ -9,11 +10,7 @@ interface FavoriteListProps {
 
 export function FavoriteList({ favorites, onRemove, onAliasUpdate }: FavoriteListProps) {
   if (favorites.length === 0) {
-    return (
-      <p className="text-center text-sm text-gray-400">
-        즐겨찾기를 추가하면 여기에 표시됩니다.
-      </p>
-    );
+    return <FavoriteListEmpty />;
   }
 
   return (
