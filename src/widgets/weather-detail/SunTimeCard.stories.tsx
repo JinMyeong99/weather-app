@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { SunTimeCard } from './SunTimeCard';
 
 // 2026-04-16 기준 서울 일출 06:02, 일몰 19:25 (Unix)
