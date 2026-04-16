@@ -7,19 +7,23 @@ interface GeolocationState {
   error: string | null;
 }
 
+const GEOLOCATION_UNSUPPORTED_STATE: GeolocationState = {
+  lat: null,
+  lon: null,
+  loading: false,
+  error: '위치 정보를 지원하지 않는 브라우저입니다.',
+};
+
 export function useGeolocation(): GeolocationState {
-  const [state, setState] = useState<GeolocationState>({
-    lat: null,
-    lon: null,
-    loading: true,
-    error: null,
-  });
+  const isSupported = typeof navigator !== 'undefined' && 'geolocation' in navigator;
+  const [state, setState] = useState<GeolocationState>(() =>
+    isSupported
+      ? { lat: null, lon: null, loading: true, error: null }
+      : GEOLOCATION_UNSUPPORTED_STATE,
+  );
 
   useEffect(() => {
-    if (!navigator.geolocation) {
-      setState({ lat: null, lon: null, loading: false, error: '위치 정보를 지원하지 않는 브라우저입니다.' });
-      return;
-    }
+    if (!isSupported) return;
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -38,7 +42,7 @@ export function useGeolocation(): GeolocationState {
         setState({ lat: null, lon: null, loading: false, error: message });
       },
     );
-  }, []);
+  }, [isSupported]);
 
   return state;
 }
