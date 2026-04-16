@@ -5,10 +5,17 @@ const meta: Meta<typeof FavoriteListEmpty> = {
   title: 'widgets/favorite-list/FavoriteListEmpty',
   component: FavoriteListEmpty,
   tags: ['autodocs'],
+  decorators: [
+    (Story) => (
+      <div className="p-6" style={{ background: 'linear-gradient(135deg, #60a5fa, #a78bfa)', width: '672px' }}>
+        <Story />
+      </div>
+    ),
+  ],
   parameters: {
     docs: {
       description: {
-        component: '즐겨찾기 목록이 비어있을 때 표시되는 안내 컴포넌트입니다. FavoriteCard와 동일한 카드 크기를 유지하면서 사용자에게 추가를 유도합니다.',
+        component: '즐겨찾기 목록이 비어있을 때 표시되는 안내 컴포넌트입니다. FavoriteCard와 동일한 카드 크기를 유지하면서 사용자에게 추가를 유도합니다. 실제 앱에서는 날씨 그라디언트 배경 위에 표시되므로 Story에서도 동일한 환경을 재현합니다.',
       },
     },
     layout: 'centered',

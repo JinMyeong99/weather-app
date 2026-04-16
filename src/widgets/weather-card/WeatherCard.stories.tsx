@@ -39,12 +39,20 @@ const meta: Meta<typeof WeatherCard> = {
   title: 'widgets/WeatherCard',
   component: WeatherCard,
   tags: ['autodocs'],
+  decorators: [
+    (Story) => (
+      <div style={{ width: '672px' }}>
+        <Story />
+      </div>
+    ),
+  ],
   parameters: {
     docs: {
       description: {
         component: '현재 위치 날씨를 표시하는 메인 카드입니다. 즐겨찾기 토글 버튼과 상세 페이지 이동 버튼을 포함합니다.',
       },
     },
+    layout: 'centered',
   },
   args: {
     locationName: '강남구',

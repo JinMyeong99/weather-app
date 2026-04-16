@@ -22,7 +22,7 @@ export const UVLow: Story = {
   name: 'UV — 낮음',
   args: {
     label: '자외선',
-    value: '낮음 (1.2)',
+    value: '낮음',
     bg: 'bg-green-200/80',
     text: 'text-green-700',
     labelColor: 'text-green-600',
@@ -34,7 +34,7 @@ export const UVHigh: Story = {
   name: 'UV — 높음',
   args: {
     label: '자외선',
-    value: '높음 (7.4)',
+    value: '높음',
     bg: 'bg-orange-200/80',
     text: 'text-orange-700',
     labelColor: 'text-orange-600',
@@ -46,7 +46,7 @@ export const UVDanger: Story = {
   name: 'UV — 위험',
   args: {
     label: '자외선',
-    value: '위험 (11+)',
+    value: '위험',
     bg: 'bg-purple-200/80',
     text: 'text-purple-700',
     labelColor: 'text-purple-600',
@@ -58,7 +58,7 @@ export const PMGood: Story = {
   name: '미세먼지 — 좋음',
   args: {
     label: '미세먼지',
-    value: '좋음 (18 μg)',
+    value: '좋음',
     bg: 'bg-green-200/80',
     text: 'text-green-700',
     labelColor: 'text-green-600',
@@ -70,7 +70,7 @@ export const PMBad: Story = {
   name: '미세먼지 — 나쁨',
   args: {
     label: '미세먼지',
-    value: '나쁨 (95 μg)',
+    value: '나쁨',
     bg: 'bg-orange-200/80',
     text: 'text-orange-700',
     labelColor: 'text-orange-600',
