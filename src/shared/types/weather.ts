@@ -10,8 +10,8 @@ export interface WeatherCurrent {
   sunrise: number;  // Unix timestamp
   sunset: number;   // Unix timestamp
   uvi: number;      // UV 지수 (0~11+)
-  pm10: number;     // 미세먼지 μg/m³
-  pm25: number;     // 초미세먼지 μg/m³
+  pm10: number | null; // 미세먼지 μg/m³
+  pm25: number | null; // 초미세먼지 μg/m³
 }
 
 export interface WeatherHourly {

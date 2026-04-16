@@ -17,7 +17,10 @@ weatherClient.interceptors.request.use((config) => {
 weatherClient.interceptors.response.use(
   (res) => res,
   (err) => {
-    console.error('[API Error]', err.config?.url, err.response?.status, err.response?.data);
+    if (import.meta.env.DEV) {
+      console.error('[API Error]', err.config?.url, err.response?.status, err.response?.data);
+    }
+
     return Promise.reject(err);
   }
 );
