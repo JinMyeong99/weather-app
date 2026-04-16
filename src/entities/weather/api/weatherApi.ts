@@ -1,48 +1,25 @@
 import { weatherClient } from '../../../shared/api/weatherClient';
 import { WEATHER_DESCRIPTION_KO } from '../../../shared/lib/weatherDescriptionKo';
 import type { WeatherData, WeatherHourly, WeatherDaily } from '../../../shared/types';
+import {
+  OWMOneCallSchema,
+  OWMAirPollutionSchema,
+  OWMReverseGeoSchema,
+} from './weatherSchemas';
 
-interface OWMOneCallResponse {
-  current: {
-    dt: number;
-    sunrise: number;
-    sunset: number;
-    temp: number;
-    feels_like: number;
-    pressure: number;
-    humidity: number;
-    visibility: number;
-    wind_speed: number;
-    wind_deg: number;
-    uvi: number;
-    weather: { id: number; description: string; icon: string }[];
-  };
-  hourly: Array<{
-    dt: number;
-    temp: number;
-    weather: { icon: string }[];
-    pop: number;
-  }>;
-  daily: Array<{
-    dt: number;
-    temp: { min: number; max: number };
-    weather: { icon: string }[];
-    pop: number;
-  }>;
-}
-
-interface OWMAirPollutionResponse {
-  list: Array<{
-    components: {
-      pm2_5: number;
-      pm10: number;
-    };
-  }>;
-}
-
-interface OWMReverseGeoItem {
-  name: string;
-  local_names?: { ko?: string };
+function validateResponse<T>(
+  schema: { safeParse: (data: unknown) => { success: true; data: T } | { success: false; error: { message: string } } },
+  data: unknown,
+  label: string,
+): T {
+  const result = schema.safeParse(data);
+  if (!result.success) {
+    if (import.meta.env.DEV) {
+      console.warn(`[Zod] ${label} 응답 검증 실패:`, result.error.message);
+    }
+    throw new Error(`${label} 응답 형식이 올바르지 않습니다.`);
+  }
+  return result.data;
 }
 
 const DAY_OF_WEEK = ['일', '월', '화', '수', '목', '금', '토'];
@@ -84,13 +61,20 @@ export async function fetchWeatherData(lat: number, lon: number): Promise<Weathe
     }),
   ]);
 
-  const oc = oneCallRes.data;
-  const geoItem = geoRes.data[0];
+  const oc = validateResponse(OWMOneCallSchema, oneCallRes.data, 'OneCall');
+  const geo = validateResponse(OWMReverseGeoSchema, geoRes.data, 'ReverseGeo');
+
+  const geoItem = geo[0];
   const locationName = geoItem?.local_names?.ko ?? geoItem?.name ?? '알 수 없음';
 
-  const airComponents = airRes.data.list[0]?.components;
-  const pm10 = Math.round(airComponents?.pm10 ?? 0);
-  const pm25 = Math.round(airComponents?.pm2_5 ?? 0);
+  // AirPollution은 누락 가능 — 검증 실패 시 null 처리
+  const airResult = OWMAirPollutionSchema.safeParse(airRes.data);
+  if (!airResult.success && import.meta.env.DEV) {
+    console.warn('[Zod] AirPollution 응답 검증 실패:', airResult.error.message);
+  }
+  const airComponents = airResult.success ? airResult.data.list[0]?.components : null;
+  const pm10 = airComponents?.pm10 != null ? Math.round(airComponents.pm10) : null;
+  const pm25 = airComponents?.pm2_5 != null ? Math.round(airComponents.pm2_5) : null;
 
   // hourly: 현재 시각 항목 prepend
   const nowEpoch = Math.floor(Date.now() / 1000);
