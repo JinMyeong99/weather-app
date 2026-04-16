@@ -8,9 +8,14 @@ const SEARCH_DEBOUNCE_MS = 300;
 interface UseSearchBarControllerParams {
   onSelect: (lat: number, lon: number, district: District) => void;
   onCurrentLocation?: () => void;
+  onSearchingChange?: (isSearching: boolean) => void;
 }
 
-export function useSearchBarController({ onSelect, onCurrentLocation }: UseSearchBarControllerParams) {
+export function useSearchBarController({
+  onSelect,
+  onCurrentLocation,
+  onSearchingChange,
+}: UseSearchBarControllerParams) {
   const { query, setQuery, results } = useDistrictSearch();
   const [inputValue, setInputValue] = useState(query);
   const [isOpen, setIsOpen] = useState(false);
@@ -43,18 +48,23 @@ export function useSearchBarController({ onSelect, onCurrentLocation }: UseSearc
     setIsOpen(false);
     setLoading(true);
     setNotFound(false);
+    onSearchingChange?.(true);
 
-    const coords = await geocodeDistrict(district);
-    setLoading(false);
+    try {
+      const coords = await geocodeDistrict(district);
 
-    if (!coords) {
-      setNotFound(true);
-      return;
+      if (!coords) {
+        setNotFound(true);
+        return;
+      }
+
+      setInputValue('');
+      setQuery('');
+      onSelect(coords.lat, coords.lon, district);
+    } finally {
+      setLoading(false);
+      onSearchingChange?.(false);
     }
-
-    setInputValue('');
-    setQuery('');
-    onSelect(coords.lat, coords.lon, district);
   };
 
   const handleCurrentLocationClick = () => {
