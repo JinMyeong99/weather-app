@@ -53,7 +53,8 @@ export function HourlyForecastStrip({ hourly }: HourlyForecastStripProps) {
     const update = () => {
       const w = el.clientWidth;
       if (w <= 0) return;
-      setItemW(w / Math.floor(w / TARGET_ITEM_W));
+      const visibleColumns = Math.max(1, Math.floor(w / TARGET_ITEM_W));
+      setItemW(w / visibleColumns);
     };
     update();
     const ro = new ResizeObserver(update);
@@ -150,12 +151,12 @@ export function HourlyForecastStrip({ hourly }: HourlyForecastStripProps) {
       <div className="relative">
         {/* 좌측 페이드 */}
         <div
-          className="pointer-events-none absolute inset-y-0 left-0 z-10 w-4 bg-gradient-to-r from-white to-transparent transition-opacity duration-200"
+          className="pointer-events-none absolute inset-y-0 left-0 z-10 w-4 bg-linear-to-r from-white to-transparent transition-opacity duration-200"
           style={{ opacity: canScrollLeft ? 1 : 0 }}
         />
         {/* 우측 페이드 */}
         <div
-          className="pointer-events-none absolute inset-y-0 right-0 z-10 w-4 bg-gradient-to-l from-white to-transparent transition-opacity duration-200"
+          className="pointer-events-none absolute inset-y-0 right-0 z-10 w-4 bg-linear-to-l from-white to-transparent transition-opacity duration-200"
           style={{ opacity: canScrollRight ? 1 : 0 }}
         />
 

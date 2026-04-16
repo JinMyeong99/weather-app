@@ -15,7 +15,7 @@ export function getWeatherIcon(iconCode: string): string {
     case '10': return isNight ? '🌧️' : '🌦️';
     case '11': return '⛈️';
     case '13': return '❄️';
-    case '50': return '🌫️';
+    case '50': return '☁️';
     default:   return '🌡️';
   }
 }

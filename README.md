@@ -1,73 +1,58 @@
-# React + TypeScript + Vite
+# Weather App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+OpenWeather API를 활용한 React 날씨 앱입니다. 현재 위치 또는 한국 행정구역 검색으로 날씨를 확인하고, 자주 보는 지역을 즐겨찾기로 저장할 수 있습니다.
 
-Currently, two official plugins are available:
+## 주요 기능
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- 현재 위치 기반 날씨 조회
+- 시/구/동 단위 지역 검색
+- 현재 날씨, 체감 온도, 습도, 풍속, 일출/일몰, 미세먼지, 자외선 표시
+- 48시간 시간별 예보와 주간 예보
+- 즐겨찾기 저장, 삭제, 별칭 수정
+- 날씨 코드별 Canvas 배경 애니메이션
+- 개발 환경 전용 날씨 배경 테스트 패널
 
-## React Compiler
+## 기술 스택
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React 19
+- TypeScript
+- Vite
+- Tailwind CSS
+- TanStack Query
+- Zustand
+- Axios
+- OpenWeather One Call / Geocoding / Air Pollution API
 
-## Expanding the ESLint configuration
+## 실행 방법
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+cp .env.example .env
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+`.env`에 OpenWeather API 키를 설정합니다.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```env
+VITE_OPENWEATHER_API_KEY=your_openweather_api_key
 ```
+
+## 검증 명령
+
+```bash
+npm run lint
+npm run build
+```
+
+## 구현 포인트
+
+- API 요청은 `weatherClient`에서 공통 파라미터(`appid`, `units`, `lang`)를 주입합니다.
+- 날씨 데이터는 TanStack Query로 캐싱하고, 즐겨찾기는 Zustand persist로 localStorage에 저장합니다.
+- 배경 효과는 DOM 파티클 대신 Canvas와 `requestAnimationFrame`으로 렌더링합니다.
+- 개발용 날씨 preset 패널과 React Query Devtools는 개발 환경에서만 노출합니다.
+
+## 알려진 제한사항
+
+- 지역 검색은 한국 행정구역 데이터를 기준으로 합니다.
+- OpenWeather Geocoding 결과에 의존하므로 일부 동명이 지역은 외부 API 응답 품질의 영향을 받을 수 있습니다.
+- 브라우저에서 위치 권한을 거부하면 검색으로 지역을 선택해야 합니다.
