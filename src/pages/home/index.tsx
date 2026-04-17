@@ -124,9 +124,9 @@ export const HomePage = () => {
         {/* 시간별 예보 */}
         {isWeatherLoading && data ? (
           <HourlyForecastPlaceholder />
-        ) : data ? (
+        ) : cardState.status === 'success' ? (
           <section className="mb-6">
-            <HourlyForecastStrip hourly={data.hourly} />
+            <HourlyForecastStrip hourly={cardState.data.hourly} />
           </section>
         ) : null}
 
