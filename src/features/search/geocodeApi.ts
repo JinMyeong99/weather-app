@@ -2,13 +2,16 @@ import { kakaoClient } from '../../shared/api/kakaoClient';
 import { KakaoAddressSearchSchema } from '../../shared/api/kakaoLocalSchemas';
 import type { District } from '../../shared/types';
 
-function isNonEmptyString(value: string | undefined): value is string {
-  return Boolean(value);
-}
-
 interface Coordinates {
   lat: number;
   lon: number;
+}
+
+// 동일 지역 반복 선택 시 Kakao Geocoding API 재호출을 방지한다.
+const geocodeCache = new Map<string, Coordinates>();
+
+function isNonEmptyString(value: string | undefined): value is string {
+  return Boolean(value);
 }
 
 async function geocodeQuery(query: string): Promise<Coordinates | null> {
@@ -53,12 +56,16 @@ function getDistrictGeocodeCandidates(district: District): string[] {
 export async function geocodeDistrict(
   district: District,
 ): Promise<Coordinates | null> {
+  const cacheKey = district.fullName;
+  if (geocodeCache.has(cacheKey)) return geocodeCache.get(cacheKey)!;
+
   const candidates = getDistrictGeocodeCandidates(district);
 
   try {
     for (const candidate of candidates) {
       const result = await geocodeQuery(candidate);
       if (result) {
+        geocodeCache.set(cacheKey, result);
         return result;
       }
     }

@@ -26,7 +26,7 @@ export const AppProviders = () => (
   <QueryClientProvider client={queryClient}>
     <DevWeatherProvider>
       <RouterProvider router={router} />
-      {import.meta.env.DEV && <DevPanel />}
+      <DevPanel />
     </DevWeatherProvider>
     {ReactQueryDevtools && (
       <Suspense fallback={null}>
