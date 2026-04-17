@@ -1,3 +1,4 @@
+import { useRef, useEffect } from 'react';
 import { useSearchBarController } from './useSearchBarController';
 import type { District } from '../../shared/types';
 
@@ -5,6 +6,7 @@ interface SearchBarProps {
   onSelect: (lat: number, lon: number, district: District) => void;
   onCurrentLocation?: () => void;
   onSearchingChange?: (isSearching: boolean) => void;
+  onNotFound?: (notFound: boolean) => void;
 }
 
 function SearchIcon() {
@@ -47,20 +49,30 @@ function CurrentLocationIcon() {
   );
 }
 
-export function SearchBar({ onSelect, onCurrentLocation, onSearchingChange }: SearchBarProps) {
+export function SearchBar({ onSelect, onCurrentLocation, onSearchingChange, onNotFound }: SearchBarProps) {
   const {
     containerRef,
     inputValue,
     isOpen,
-    notFound,
     results,
+    focusedIndex,
     showLocationTooltip,
     handleChange,
+    handleKeyDown,
     handleSelect,
     handleCurrentLocationClick,
     openResultsIfAvailable,
     setShowLocationTooltip,
-  } = useSearchBarController({ onSelect, onCurrentLocation, onSearchingChange });
+  } = useSearchBarController({ onSelect, onCurrentLocation, onSearchingChange, onNotFound });
+
+  const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  // 포커스된 항목 자동 스크롤
+  useEffect(() => {
+    if (focusedIndex >= 0) {
+      itemRefs.current[focusedIndex]?.scrollIntoView({ block: 'nearest' });
+    }
+  }, [focusedIndex]);
 
   return (
     <div ref={containerRef} className="relative z-30 w-full">
@@ -75,7 +87,12 @@ export function SearchBar({ onSelect, onCurrentLocation, onSearchingChange }: Se
           placeholder="시·구·동 단위로 검색 (예: 종로구, 청운동)"
           value={inputValue}
           onChange={handleChange}
+          onKeyDown={handleKeyDown}
           onFocus={openResultsIfAvailable}
+          role="combobox"
+          aria-expanded={isOpen && results.length > 0}
+          aria-autocomplete="list"
+          aria-activedescendant={focusedIndex >= 0 ? `search-result-${focusedIndex}` : undefined}
           className="w-full rounded-xl border border-gray-300 bg-white py-3 pl-10 pr-10 text-sm shadow-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
         />
 
@@ -107,18 +124,21 @@ export function SearchBar({ onSelect, onCurrentLocation, onSearchingChange }: Se
         )}
       </div>
 
-      {notFound && (
-        <p className="mt-1 text-xs text-red-400">해당 장소의 정보가 제공되지 않습니다.</p>
-      )}
-
       {isOpen && results.length > 0 && (
-        <ul className="absolute z-40 mt-1 w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg">
-          {results.map((district) => (
-            <li key={district.fullName}>
+        <ul
+          role="listbox"
+          className="absolute z-40 mt-1 w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg"
+        >
+          {results.map((district, i) => (
+            <li key={district.fullName} role="option" aria-selected={i === focusedIndex}>
               <button
+                id={`search-result-${i}`}
+                ref={(el) => { itemRefs.current[i] = el; }}
                 type="button"
                 onClick={() => handleSelect(district)}
-                className="block w-full cursor-pointer px-4 py-2.5 text-left text-sm hover:bg-blue-50"
+                className={`block w-full cursor-pointer px-4 py-2.5 text-left text-sm transition-colors ${
+                  i === focusedIndex ? 'bg-blue-50 text-blue-700' : 'hover:bg-blue-50'
+                }`}
               >
                 {district.displayName}
               </button>

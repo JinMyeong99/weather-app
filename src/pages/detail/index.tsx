@@ -44,9 +44,14 @@ export const DetailPage = () => {
   const { data, isLoading, isError } = useWeather(coords?.lat ?? null, coords?.lon ?? null);
   const { favorites, removeFavorite, updateAlias } = useFavorites();
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [locationId]);
+
   const [isResolvingSearchLocation, setIsResolvingSearchLocation] = useState(false);
   const [isResolvingCurrentLocation, setIsResolvingCurrentLocation] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
+  const [isNotFound, setIsNotFound] = useState(false);
   const locationName = state?.locationName ?? data?.locationName ?? '날씨 상세';
   const [cachedWeatherIcon] = useState(() => getCachedWeatherIcon());
   const currentWeatherIcon = data?.current.icon;
@@ -71,6 +76,7 @@ export const DetailPage = () => {
 
   const handleSelect = (lat: number, lon: number, district: District) => {
     setLocationError(null);
+    setIsNotFound(false);
     navigate(`/detail/${makeLocationId(lat, lon)}`, {
       state: {
         locationName: district.displayName,
@@ -138,6 +144,7 @@ export const DetailPage = () => {
               onSelect={handleSelect}
               onCurrentLocation={handleCurrentLocation}
               onSearchingChange={handleSearchingChange}
+              onNotFound={setIsNotFound}
             />
           </div>
 
@@ -151,7 +158,11 @@ export const DetailPage = () => {
           {isResolvingLocation && (
             <WeatherCardPlaceholder className="mb-6" locationName={placeholderLocationName} />
           )}
-          {isError && <ErrorMessage message="날씨 정보를 불러올 수 없습니다." />}
+          {(isError || isNotFound) && (
+            <div className="mb-6 rounded-2xl bg-white p-5 shadow-sm">
+              <ErrorMessage message="해당 장소의 정보가 제공되지 않습니다." />
+            </div>
+          )}
 
           {canShowWeather && (
             <>

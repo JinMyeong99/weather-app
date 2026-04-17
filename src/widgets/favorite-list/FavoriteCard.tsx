@@ -25,12 +25,6 @@ export function FavoriteCard({ favorite, onRemove, onAliasUpdate }: FavoriteCard
     });
   };
 
-  const handleDoubleClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsEditing(true);
-    setTimeout(() => inputRef.current?.select(), 0);
-  };
-
   const handleAliasConfirm = () => {
     const trimmed = alias.trim();
     if (trimmed) {
@@ -67,13 +61,20 @@ export function FavoriteCard({ favorite, onRemove, onAliasUpdate }: FavoriteCard
             className="w-full rounded border border-blue-300 px-1 text-sm font-semibold outline-none focus:ring-1 focus:ring-blue-300"
           />
         ) : (
-          <p
-            onDoubleClick={handleDoubleClick}
-            className="truncate text-sm font-semibold text-gray-700"
-            title="더블클릭하여 별칭 수정"
-          >
-            {favorite.alias}
-          </p>
+          <div className="flex items-center gap-1">
+            <p className="truncate text-sm font-semibold text-gray-700">
+              {favorite.alias}
+            </p>
+            <button
+              onClick={(e) => { e.stopPropagation(); setIsEditing(true); setTimeout(() => inputRef.current?.select(), 0); }}
+              className="shrink-0 -my-1 p-1.5 text-gray-300 hover:text-blue-400 transition-colors rounded-md hover:bg-blue-50"
+              aria-label="별칭 수정"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+              </svg>
+            </button>
+          </div>
         )}
         {data && (
           <p className="mt-0.5 text-xs capitalize text-gray-400">{data.current.description}</p>
