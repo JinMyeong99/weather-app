@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { getCurrentPositionOnce } from '../../features/geolocation/getCurrentPositionOnce';
-import { reverseGeocode } from '../../features/geolocation/reverseGeocode';
 import { useWeather } from '../../entities/weather/model/useWeather';
+import { useCurrentLocationNavigation } from '../../features/geolocation/useCurrentLocationNavigation';
 import { SearchBar } from '../../widgets/search-bar/SearchBar';
 import { WeatherCard } from '../../widgets/weather-card/WeatherCard';
 import { WeatherCardPlaceholder } from '../../widgets/weather-card/WeatherCardPlaceholder';
@@ -18,7 +17,6 @@ import { useDevWeather } from '../../shared/lib/useDevWeather';
 import { WeatherAnimation } from '../../shared/ui/WeatherAnimation';
 import { makeLocationId, parseLocationId } from '../../shared/lib/locationId';
 import type { District } from '../../shared/types';
-
 
 export const DetailPage = () => {
   const { locationId = '' } = useParams<{ locationId: string }>();
@@ -36,8 +34,6 @@ export const DetailPage = () => {
   }, [locationId]);
 
   const [isResolvingSearchLocation, setIsResolvingSearchLocation] = useState(false);
-  const [isResolvingCurrentLocation, setIsResolvingCurrentLocation] = useState(false);
-  const [locationError, setLocationError] = useState<string | null>(null);
   const [isNotFound, setIsNotFound] = useState(false);
   const locationName = state?.locationName ?? data?.locationName ?? '날씨 상세';
   const [cachedWeatherIcon] = useState(() => getCachedWeatherIcon());
@@ -52,6 +48,14 @@ export const DetailPage = () => {
   const { mockIcon } = useDevWeather();
   const weatherIcon = mockIcon ?? currentWeatherIcon ?? state?.weatherIcon ?? cachedWeatherIcon ?? '01d';
   const { gradient, isDark } = getWeatherTheme(weatherIcon);
+
+  // 현재 위치 이동 흐름을 훅으로 캡슐화 (weatherIcon 결정 후 호출)
+  const {
+    isResolving: isResolvingCurrentLocation,
+    error: currentLocationError,
+    handleCurrentLocation,
+  } = useCurrentLocationNavigation(weatherIcon);
+
   const isResolvingLocation = isResolvingSearchLocation || isResolvingCurrentLocation;
   const isInitialLoading = coords !== null && isLoading && !data && !isResolvingLocation;
   const canShowWeather = coords !== null && data !== undefined && !isLoading && !isResolvingLocation;
@@ -62,7 +66,6 @@ export const DetailPage = () => {
       : locationName;
 
   const handleSelect = (lat: number, lon: number, district: District) => {
-    setLocationError(null);
     setIsNotFound(false);
     navigate(`/detail/${makeLocationId(lat, lon)}`, {
       state: {
@@ -75,30 +78,6 @@ export const DetailPage = () => {
 
   const handleSearchingChange = (isSearching: boolean) => {
     setIsResolvingSearchLocation(isSearching);
-    if (isSearching) {
-      setLocationError(null);
-    }
-  };
-
-  const handleCurrentLocation = async () => {
-    setLocationError(null);
-    setIsResolvingCurrentLocation(true);
-
-    try {
-      const position = await getCurrentPositionOnce();
-      const currentLocationName = await reverseGeocode(position.lat, position.lon);
-
-      navigate(`/detail/${makeLocationId(position.lat, position.lon)}`, {
-        state: {
-          locationName: currentLocationName,
-          weatherIcon,
-        },
-      });
-    } catch (error) {
-      setLocationError((error as Error).message);
-    } finally {
-      setIsResolvingCurrentLocation(false);
-    }
   };
 
   return (
@@ -135,9 +114,9 @@ export const DetailPage = () => {
             />
           </div>
 
-          {locationError && (
+          {currentLocationError && (
             <div className="mb-6">
-              <ErrorMessage message={locationError} />
+              <ErrorMessage message={currentLocationError} />
             </div>
           )}
 

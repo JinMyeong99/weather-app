@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
 import { useGeolocation } from '../../features/geolocation/useGeolocation';
-import { reverseGeocode } from '../../features/geolocation/reverseGeocode';
+import { useCurrentLocationName } from '../../features/geolocation/useCurrentLocationName';
 import { useWeather } from '../../entities/weather/model/useWeather';
 import { useFavorites } from '../../features/favorites/useFavorites';
 import { SearchBar } from '../../widgets/search-bar/SearchBar';
@@ -29,19 +28,7 @@ export const HomePage = () => {
   const lat = selected?.lat ?? geo.lat;
   const lon = selected?.lon ?? geo.lon;
 
-  // geolocation 좌표를 한국어 행정구역명으로 변환
-  const { data: geoLocationName } = useQuery({
-    queryKey: ['reverseGeocode', geo.lat, geo.lon],
-    queryFn: () => {
-      if (geo.lat === null || geo.lon === null) {
-        throw new Error('위치명 조회에 필요한 좌표가 없습니다.');
-      }
-
-      return reverseGeocode(geo.lat, geo.lon);
-    },
-    enabled: geo.lat !== null && geo.lon !== null && selected === null,
-    staleTime: Infinity,
-  });
+  const geoLocationName = useCurrentLocationName(geo.lat, geo.lon, selected === null);
 
   const currentLocationName = selected?.district.displayName ?? geoLocationName ?? '현재 위치';
 
