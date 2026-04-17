@@ -34,7 +34,7 @@ export function WeatherDetail({ data }: WeatherDetailProps) {
       <p className="text-lg font-semibold text-slate-800">{current.description}</p>
 
       <p className="text-base font-medium">
-        <span className="text-blue-500">최저 {current.tempMin}°</span>
+        <span className="text-blue-600">최저 {current.tempMin}°</span>
         <span className="mx-1.5 text-slate-300">/</span>
         <span className="text-red-600">최고 {current.tempMax}°</span>
       </p>
