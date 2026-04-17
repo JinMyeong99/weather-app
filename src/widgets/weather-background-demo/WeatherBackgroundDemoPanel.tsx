@@ -17,7 +17,7 @@ const PRESETS = [
   { icon: '50d', label: '안개' },
 ] as const;
 
-export function DevPanel() {
+export function WeatherBackgroundDemoPanel() {
   const { mockIcon, setMockIcon } = useDevWeather();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -26,7 +26,7 @@ export function DevPanel() {
       {isOpen ? (
         <div className="rounded-2xl border border-white/10 bg-gray-900/95 p-4 shadow-2xl backdrop-blur-sm">
           <div className="mb-3 flex items-center justify-between gap-8">
-            <span className="text-xs font-semibold tracking-widest text-gray-400">🎨 날씨 테마</span>
+            <span className="text-xs font-semibold tracking-widest text-gray-400">🎨 날씨 배경 미리보기</span>
             <button
               onClick={() => setIsOpen(false)}
               className="text-xs text-gray-500 hover:text-white"
@@ -45,7 +45,7 @@ export function DevPanel() {
                   : 'bg-white/10 text-white/60 hover:bg-white/20 hover:text-white'
               }`}
             >
-              실제 날씨
+              실제 날씨로 보기
             </button>
 
             {PRESETS.map((p) => (
@@ -69,7 +69,7 @@ export function DevPanel() {
           onClick={() => setIsOpen(true)}
           className="rounded-full border border-white/10 bg-gray-900/90 px-4 py-2 text-xs font-medium text-white/70 shadow-lg backdrop-blur-sm hover:text-white"
         >
-          🎨 {mockIcon ? PRESETS.find((p) => p.icon === mockIcon)?.label : '날씨 테마'}
+          🎨 {mockIcon ? PRESETS.find((p) => p.icon === mockIcon)?.label : '배경 데모'}
         </button>
       )}
     </div>
