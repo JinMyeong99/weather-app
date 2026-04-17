@@ -23,6 +23,7 @@ export const HomePage = () => {
   const geo = useGeolocation();
   const [selected, setSelected] = useState<{ lat: number; lon: number; district: District } | null>(null);
   const [isResolvingSearchLocation, setIsResolvingSearchLocation] = useState(false);
+  const [isNotFound, setIsNotFound] = useState(false);
 
   const lat = selected?.lat ?? geo.lat;
   const lon = selected?.lon ?? geo.lon;
@@ -62,11 +63,13 @@ export const HomePage = () => {
   const isInitialLoading = isWeatherLoading && !data;
 
   const handleSelect = (newLat: number, newLon: number, district: District) => {
+    setIsNotFound(false);
     setTransitionWeatherIcon(currentWeatherIcon ?? transitionWeatherIcon);
     setSelected({ lat: newLat, lon: newLon, district });
   };
 
   const handleCurrentLocation = () => {
+    setIsNotFound(false);
     setTransitionWeatherIcon(currentWeatherIcon ?? transitionWeatherIcon);
     setSelected(null);
   };
@@ -88,6 +91,7 @@ export const HomePage = () => {
             onSelect={handleSelect}
             onCurrentLocation={handleCurrentLocation}
             onSearchingChange={setIsResolvingSearchLocation}
+            onNotFound={setIsNotFound}
           />
         </div>
 
@@ -98,13 +102,17 @@ export const HomePage = () => {
             locationName={currentLocationName}
             showMore
           />
+        ) : isNotFound ? (
+          <div className="mb-6 rounded-2xl bg-white p-5 shadow-sm">
+            <ErrorMessage message="해당 장소의 정보가 제공되지 않습니다." />
+          </div>
         ) : geo.error && !selected ? (
           <div className="mb-6 rounded-2xl bg-white p-5 shadow-sm">
             <ErrorMessage message={geo.error} />
           </div>
         ) : isError ? (
           <div className="mb-6 rounded-2xl bg-white p-5 shadow-sm">
-            <ErrorMessage message="날씨 정보를 불러올 수 없습니다." />
+            <ErrorMessage message="해당 장소의 정보가 제공되지 않습니다." />
           </div>
         ) : data && lat !== null && lon !== null ? (
           <WeatherCard

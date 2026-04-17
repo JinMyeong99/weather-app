@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ChangeEvent } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent } from 'react';
 import { useDistrictSearch } from '../../entities/district/model/useDistrictSearch';
 import { geocodeDistrict } from '../../features/search/geocodeApi';
 import type { District } from '../../shared/types';
@@ -9,12 +9,14 @@ interface UseSearchBarControllerParams {
   onSelect: (lat: number, lon: number, district: District) => void;
   onCurrentLocation?: () => void;
   onSearchingChange?: (isSearching: boolean) => void;
+  onNotFound?: (notFound: boolean) => void;
 }
 
 export function useSearchBarController({
   onSelect,
   onCurrentLocation,
   onSearchingChange,
+  onNotFound,
 }: UseSearchBarControllerParams) {
   const { query, setQuery, results } = useDistrictSearch();
   const [inputValue, setInputValue] = useState(query);
@@ -22,14 +24,21 @@ export function useSearchBarController({
   const [notFound, setNotFound] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showLocationTooltip, setShowLocationTooltip] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState(-1);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // 결과가 바뀌면 포커스 초기화
+  useEffect(() => {
+    setFocusedIndex(-1);
+  }, [results]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const nextValue = e.target.value;
 
     setInputValue(nextValue);
     setNotFound(false);
+    onNotFound?.(false);
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
     if (nextValue.trim().length === 0) {
@@ -55,6 +64,7 @@ export function useSearchBarController({
 
       if (!coords) {
         setNotFound(true);
+        onNotFound?.(true);
         return;
       }
 
@@ -64,6 +74,30 @@ export function useSearchBarController({
     } finally {
       setLoading(false);
       onSearchingChange?.(false);
+    }
+  };
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (!isOpen || results.length === 0) return;
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setFocusedIndex((prev) => Math.min(prev + 1, results.length - 1));
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setFocusedIndex((prev) => Math.max(prev - 1, -1));
+        break;
+      case 'Enter':
+        e.preventDefault();
+        handleSelect(results[focusedIndex >= 0 ? focusedIndex : 0]);
+        setFocusedIndex(-1);
+        break;
+      case 'Escape':
+        setIsOpen(false);
+        setFocusedIndex(-1);
+        break;
     }
   };
 
@@ -98,8 +132,10 @@ export function useSearchBarController({
     loading,
     notFound,
     results,
+    focusedIndex,
     showLocationTooltip,
     handleChange,
+    handleKeyDown,
     handleSelect,
     handleCurrentLocationClick,
     openResultsIfAvailable,
