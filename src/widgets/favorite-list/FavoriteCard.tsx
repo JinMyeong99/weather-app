@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useWeather } from '../../entities/weather/model/useWeather';
 import { getWeatherIcon } from '../../shared/lib/getWeatherIcon';
 import { Skeleton } from '../../shared/ui/Skeleton';
+import { makeLocationId } from '../../shared/lib/locationId';
 import type { Favorite } from '../../shared/types';
 
 interface FavoriteCardProps {
@@ -20,7 +21,7 @@ export function FavoriteCard({ favorite, onRemove, onAliasUpdate }: FavoriteCard
 
   const handleCardClick = () => {
     if (isEditing) return;
-    navigate(`/detail/${btoa(`${favorite.lat},${favorite.lon}`)}`, {
+    navigate(`/detail/${makeLocationId(favorite.lat, favorite.lon)}`, {
       state: { locationName: favorite.alias, district: favorite.district },
     });
   };

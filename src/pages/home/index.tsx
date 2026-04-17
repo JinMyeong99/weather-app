@@ -16,6 +16,7 @@ import { getCachedWeatherIcon, setCachedWeatherIcon } from '../../shared/lib/wea
 import { useDevWeather } from '../../shared/lib/useDevWeather';
 import { WeatherAnimation } from '../../shared/ui/WeatherAnimation';
 import type { District } from '../../shared/types';
+import { makeLocationId } from '../../shared/lib/locationId';
 import { HomePagePlaceholder, HourlyForecastPlaceholder } from './HomePagePlaceholder';
 
 export const HomePage = () => {
@@ -123,7 +124,7 @@ export const HomePage = () => {
             lon={lon}
             district={selected?.district}
             onClick={() =>
-              navigate(`/detail/${btoa(`${lat},${lon}`)}`, {
+              navigate(`/detail/${makeLocationId(lat, lon)}`, {
                 state: {
                   locationName: currentLocationName,
                   district: selected?.district,

@@ -16,22 +16,9 @@ import { getWeatherTheme } from '../../shared/lib/getWeatherTheme';
 import { getCachedWeatherIcon, setCachedWeatherIcon } from '../../shared/lib/weatherThemeCache';
 import { useDevWeather } from '../../shared/lib/useDevWeather';
 import { WeatherAnimation } from '../../shared/ui/WeatherAnimation';
+import { makeLocationId, parseLocationId } from '../../shared/lib/locationId';
 import type { District } from '../../shared/types';
 
-function parseLocationId(locationId: string): { lat: number; lon: number } | null {
-  try {
-    const decoded = atob(locationId);
-    const [lat, lon] = decoded.split(',').map(Number);
-    if (isNaN(lat) || isNaN(lon)) return null;
-    return { lat, lon };
-  } catch {
-    return null;
-  }
-}
-
-function makeLocationId(lat: number, lon: number): string {
-  return btoa(`${lat},${lon}`);
-}
 
 export const DetailPage = () => {
   const { locationId = '' } = useParams<{ locationId: string }>();
