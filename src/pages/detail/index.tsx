@@ -124,7 +124,7 @@ export const DetailPage = () => {
           onBack={() => navigate('/')}
         />
       ) : (
-        <div className="relative z-10 mx-auto max-w-2xl px-4 py-8">
+        <main className="relative z-10 mx-auto max-w-2xl px-4 py-8">
 
           {/* 헤더 */}
           <div className="mb-6 flex items-center gap-3">
@@ -198,7 +198,7 @@ export const DetailPage = () => {
             </>
           )}
 
-        </div>
+        </main>
       )}
     </div>
   );
