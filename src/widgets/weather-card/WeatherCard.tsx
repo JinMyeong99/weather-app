@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useFavorites } from '../../features/favorites/useFavorites';
 import { WeatherDetail } from '../weather-detail/WeatherDetail';
-import { ErrorMessage } from '../../shared/ui/ErrorMessage';
+import { Toast } from '../../shared/ui/Toast';
 import type { District, WeatherData } from '../../shared/types';
 
 interface WeatherCardProps {
@@ -95,7 +95,7 @@ export function WeatherCard({ locationName, data, lat, lon, district, onClick, c
           </button>
         </div>
 
-        {addError && <ErrorMessage message={addError} />}
+        {addError && <Toast message={addError} onDismiss={() => setAddError(null)} />}
         <WeatherDetail data={data} />
       </div>
 
