@@ -110,6 +110,7 @@ export function useSearchBarController({
     if (results.length > 0) setIsOpen(true);
   };
 
+  // 외부 클릭 시 드롭다운 닫기
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -118,9 +119,12 @@ export function useSearchBarController({
     };
 
     document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
+  // 언마운트 시 진행 중인 debounce 타이머 정리
+  useEffect(() => {
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
   }, []);
