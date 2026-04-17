@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { GEOLOCATION_ERRORS } from './geolocationErrors';
 
 interface GeolocationState {
   lat: number | null;
@@ -11,7 +12,7 @@ const GEOLOCATION_UNSUPPORTED_STATE: GeolocationState = {
   lat: null,
   lon: null,
   loading: false,
-  error: '위치 정보를 지원하지 않는 브라우저입니다.',
+  error: GEOLOCATION_ERRORS.UNSUPPORTED,
 };
 
 export function useGeolocation(): GeolocationState {
@@ -37,8 +38,8 @@ export function useGeolocation(): GeolocationState {
       (err) => {
         const message =
           err.code === err.PERMISSION_DENIED
-            ? '위치 권한이 거부되었습니다. 검색으로 지역을 선택해주세요.'
-            : '현재 위치를 가져올 수 없습니다.';
+            ? GEOLOCATION_ERRORS.PERMISSION_DENIED
+            : GEOLOCATION_ERRORS.UNAVAILABLE;
         setState({ lat: null, lon: null, loading: false, error: message });
       },
     );

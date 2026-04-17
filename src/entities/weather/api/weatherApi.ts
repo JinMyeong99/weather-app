@@ -22,11 +22,22 @@ function validateResponse<T>(
   return result.data;
 }
 
+// OWM hourly 배열에서 현재 시각 포함 최대 48개 항목을 사용한다. prepend된 현재 시각 1개 포함이므로 slice는 47개.
+const MAX_HOURLY_ITEMS = 47;
+
+// 오전(AM) 대표 아이콘 추출 기준 시간대 (환경부·기상청 06~12시 기준)
+const AM_START_HOUR = 6;
+const AM_END_HOUR = 12;
+
+// 오후(PM) 대표 아이콘 추출 기준 시간대 (12~18시)
+const PM_START_HOUR = 12;
+const PM_END_HOUR = 18;
+
 const DAY_OF_WEEK = ['일', '월', '화', '수', '목', '금', '토'];
 
+/** unix timestamp(초) → 'YYYY-MM-DD' 로컬 날짜 문자열 */
 function toDateStr(dt: number): string {
-  const d = new Date(dt * 1000);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  return toLocalDateStr(new Date(dt * 1000));
 }
 
 function toTimeStr(dt: number): string {
@@ -34,6 +45,7 @@ function toTimeStr(dt: number): string {
   return `${String(d.getHours()).padStart(2, '0')}:00`;
 }
 
+/** Date 객체 → 'YYYY-MM-DD' 로컬 날짜 문자열 */
 function toLocalDateStr(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
@@ -100,7 +112,7 @@ export async function fetchWeatherData(
 
   const hourly: WeatherHourly[] = [
     currentHourlyItem,
-    ...forecastHourly.slice(0, 47).map((item) => ({
+    ...forecastHourly.slice(0, MAX_HOURLY_ITEMS).map((item) => ({
       dt: item.dt,
       time: toTimeStr(item.dt),
       temp: Math.round(item.temp),
@@ -124,11 +136,11 @@ export async function fetchWeatherData(
 
     const amItems = dayItems.filter((i) => {
       const h = new Date(i.dt * 1000).getHours();
-      return h >= 6 && h < 12;
+      return h >= AM_START_HOUR && h < AM_END_HOUR;
     });
     const pmItems = dayItems.filter((i) => {
       const h = new Date(i.dt * 1000).getHours();
-      return h >= 12 && h < 18;
+      return h >= PM_START_HOUR && h < PM_END_HOUR;
     });
     const fallback = [...dayItems].sort((a, b) => b.pop - a.pop);
     const dailyIcon = item.weather[0].icon;

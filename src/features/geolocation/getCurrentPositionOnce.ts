@@ -1,3 +1,5 @@
+import { GEOLOCATION_ERRORS } from './geolocationErrors';
+
 export interface CurrentPositionCoords {
   lat: number;
   lon: number;
@@ -9,7 +11,7 @@ let cachedPromise: Promise<CurrentPositionCoords> | null = null;
 
 export function getCurrentPositionOnce(): Promise<CurrentPositionCoords> {
   if (typeof navigator === 'undefined' || !('geolocation' in navigator)) {
-    return Promise.reject(new Error('위치 정보를 지원하지 않는 브라우저입니다.'));
+    return Promise.reject(new Error(GEOLOCATION_ERRORS.UNSUPPORTED));
   }
 
   if (cachedPromise) return cachedPromise;
@@ -26,8 +28,8 @@ export function getCurrentPositionOnce(): Promise<CurrentPositionCoords> {
         cachedPromise = null; // 실패 시 초기화 → 재시도 가능
         const message =
           error.code === error.PERMISSION_DENIED
-            ? '위치 권한이 거부되었습니다. 검색으로 지역을 선택해주세요.'
-            : '현재 위치를 가져올 수 없습니다.';
+            ? GEOLOCATION_ERRORS.PERMISSION_DENIED
+            : GEOLOCATION_ERRORS.UNAVAILABLE;
 
         reject(new Error(message));
       },
