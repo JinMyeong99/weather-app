@@ -109,7 +109,7 @@ export function FavoriteCard({ favorite, onRemove, onAliasUpdate }: FavoriteCard
       {/* 삭제 버튼 */}
       <button
         onClick={(e) => { e.stopPropagation(); onRemove(favorite.id); }}
-        className="shrink-0 text-gray-300 hover:text-red-400"
+        className="shrink-0 -mr-2 p-2 text-gray-300 hover:text-red-400"
         aria-label="즐겨찾기 삭제"
       >
         ✕
