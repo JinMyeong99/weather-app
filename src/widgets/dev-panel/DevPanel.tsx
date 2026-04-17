@@ -26,7 +26,7 @@ export function DevPanel() {
       {isOpen ? (
         <div className="rounded-2xl border border-white/10 bg-gray-900/95 p-4 shadow-2xl backdrop-blur-sm">
           <div className="mb-3 flex items-center justify-between gap-8">
-            <span className="text-xs font-semibold tracking-widest text-gray-400">🛠 배경 테스트</span>
+            <span className="text-xs font-semibold tracking-widest text-gray-400">🎨 날씨 테마</span>
             <button
               onClick={() => setIsOpen(false)}
               className="text-xs text-gray-500 hover:text-white"
@@ -69,7 +69,7 @@ export function DevPanel() {
           onClick={() => setIsOpen(true)}
           className="rounded-full border border-white/10 bg-gray-900/90 px-4 py-2 text-xs font-medium text-white/70 shadow-lg backdrop-blur-sm hover:text-white"
         >
-          🛠 {mockIcon ? `테스트 중: ${PRESETS.find((p) => p.icon === mockIcon)?.label}` : '배경 테스트'}
+          🎨 {mockIcon ? PRESETS.find((p) => p.icon === mockIcon)?.label : '날씨 테마'}
         </button>
       )}
     </div>

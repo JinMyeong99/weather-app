@@ -3,12 +3,18 @@ export interface CurrentPositionCoords {
   lon: number;
 }
 
+// 진행 중인 요청을 재사용해 중복 geolocation 호출을 방지한다.
+// 성공한 좌표는 세션 내내 캐싱하고, 실패 시에는 null로 초기화해 재시도를 허용한다.
+let cachedPromise: Promise<CurrentPositionCoords> | null = null;
+
 export function getCurrentPositionOnce(): Promise<CurrentPositionCoords> {
   if (typeof navigator === 'undefined' || !('geolocation' in navigator)) {
     return Promise.reject(new Error('위치 정보를 지원하지 않는 브라우저입니다.'));
   }
 
-  return new Promise((resolve, reject) => {
+  if (cachedPromise) return cachedPromise;
+
+  cachedPromise = new Promise((resolve, reject) => {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         resolve({
@@ -17,6 +23,7 @@ export function getCurrentPositionOnce(): Promise<CurrentPositionCoords> {
         });
       },
       (error) => {
+        cachedPromise = null; // 실패 시 초기화 → 재시도 가능
         const message =
           error.code === error.PERMISSION_DENIED
             ? '위치 권한이 거부되었습니다. 검색으로 지역을 선택해주세요.'
@@ -26,4 +33,6 @@ export function getCurrentPositionOnce(): Promise<CurrentPositionCoords> {
       },
     );
   });
+
+  return cachedPromise;
 }

@@ -48,16 +48,23 @@ function getDayLabel(date: string): string {
   return DAY_OF_WEEK[new Date(date + 'T12:00:00').getDay()];
 }
 
-export async function fetchWeatherData(lat: number, lon: number): Promise<WeatherData> {
+export async function fetchWeatherData(
+  lat: number,
+  lon: number,
+  signal?: AbortSignal,
+): Promise<WeatherData> {
   const [oneCallRes, geoRes, airRes] = await Promise.all([
     weatherClient.get<unknown>('/data/3.0/onecall', {
       params: { lat, lon, exclude: 'minutely,alerts' },
+      signal,
     }),
     weatherClient.get<unknown>('/geo/1.0/reverse', {
       params: { lat, lon, limit: 1 },
+      signal,
     }),
     weatherClient.get<unknown>('/data/2.5/air_pollution', {
       params: { lat, lon },
+      signal,
     }),
   ]);
 

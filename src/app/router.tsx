@@ -1,14 +1,16 @@
+import { Suspense } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
-import { HomePage } from '../pages/home';
-import { DetailPage } from '../pages/detail';
 import { ErrorBoundary } from '../shared/ui/ErrorBoundary';
+import { HomePage, DetailPage } from './lazyPages';
 
 export const router = createBrowserRouter([
   {
     path: '/',
     element: (
       <ErrorBoundary pageName="홈">
-        <HomePage />
+        <Suspense fallback={null}>
+          <HomePage />
+        </Suspense>
       </ErrorBoundary>
     ),
   },
@@ -16,7 +18,9 @@ export const router = createBrowserRouter([
     path: '/detail/:locationId',
     element: (
       <ErrorBoundary pageName="상세">
-        <DetailPage />
+        <Suspense fallback={null}>
+          <DetailPage />
+        </Suspense>
       </ErrorBoundary>
     ),
   },
