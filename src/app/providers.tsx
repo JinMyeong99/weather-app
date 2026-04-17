@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider } from 'react-router-dom';
 import { router } from './router';
 import { DevWeatherProvider } from '../shared/lib/DevWeatherProvider';
-import { DevPanel } from '../widgets/dev-panel/DevPanel';
+import { WeatherBackgroundDemoPanel } from '../widgets/weather-background-demo/WeatherBackgroundDemoPanel';
 
 const ReactQueryDevtools = import.meta.env.DEV
   ? lazy(() =>
@@ -12,6 +12,9 @@ const ReactQueryDevtools = import.meta.env.DEV
       })),
     )
   : null;
+
+const shouldShowBackgroundDemo =
+  import.meta.env.DEV || import.meta.env.VITE_ENABLE_BACKGROUND_DEMO === 'true';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -26,7 +29,7 @@ export const AppProviders = () => (
   <QueryClientProvider client={queryClient}>
     <DevWeatherProvider>
       <RouterProvider router={router} />
-      <DevPanel />
+      {shouldShowBackgroundDemo && <WeatherBackgroundDemoPanel />}
     </DevWeatherProvider>
     {ReactQueryDevtools && (
       <Suspense fallback={null}>
