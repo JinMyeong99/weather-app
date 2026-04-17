@@ -98,16 +98,20 @@ export async function fetchWeatherData(
   // hourly: 현재 시각 항목 prepend
   const nowEpoch = Math.floor(Date.now() / 1000);
   const now = new Date();
+  const currentHourStart = Math.floor(nowEpoch / 3600) * 3600;
+  const currentForecastItem =
+    oc.hourly.find((item) => item.dt === currentHourStart) ??
+    oc.hourly.find((item) => item.dt > nowEpoch) ??
+    oc.hourly[0];
   const currentHourlyItem: WeatherHourly = {
     dt: nowEpoch,
     time: `${String(now.getHours()).padStart(2, '0')}:00`,
     temp: Math.round(oc.current.temp),
     icon: oc.current.weather[0].icon,
-    pop: 0,
+    pop: currentForecastItem?.pop ?? 0,
   };
 
   // 현재 UTC 정각(currentHourStart)과 같은 OWM 항목 제외 (현재 시각으로 prepend 했으므로 중복 방지)
-  const currentHourStart = Math.floor(nowEpoch / 3600) * 3600;
   const forecastHourly = oc.hourly.filter((item) => item.dt > currentHourStart);
 
   const hourly: WeatherHourly[] = [
