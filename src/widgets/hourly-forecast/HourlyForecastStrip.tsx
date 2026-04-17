@@ -236,12 +236,12 @@ export function HourlyForecastStrip({ hourly }: HourlyForecastStripProps) {
                   style={{ width: itemW }}
                 >
                   <span className="text-xl leading-none">{getWeatherIcon(item.icon)}</span>
-                  <span className="h-4 text-xs text-blue-400">
+                  <span className="h-4 text-xs text-blue-600">
                     {item.pop > 0 ? `💧${Math.round(item.pop * 100)}%` : ''}
                   </span>
                   <span
                     className={`text-xs ${
-                      i === 0 ? 'font-semibold text-blue-500' : 'text-gray-400'
+                      i === 0 ? 'font-semibold text-blue-600' : 'text-gray-500'
                     }`}
                   >
                     {i === 0 ? nowLabel : item.time}

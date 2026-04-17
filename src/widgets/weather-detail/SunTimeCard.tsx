@@ -54,7 +54,7 @@ export function SunTimeCard({ label, value, type, className = '' }: SunTimeCardP
   const color = isSunrise
     ? 'border-amber-200/80 bg-amber-50/80 text-amber-800'
     : 'border-orange-200/80 bg-orange-50/80 text-orange-800';
-  const labelColor = isSunrise ? 'text-amber-600' : 'text-orange-600';
+  const labelColor = isSunrise ? 'text-amber-700' : 'text-orange-700';
   const timeLineColor = isSunrise ? 'bg-amber-300/45' : 'bg-orange-300/45';
   const iconBg = isSunrise ? 'bg-amber-100/45' : 'bg-orange-100/45';
 
