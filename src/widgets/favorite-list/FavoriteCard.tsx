@@ -1,9 +1,9 @@
-import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWeather } from '../../entities/weather/model/useWeather';
 import { getWeatherIcon } from '../../shared/lib/getWeatherIcon';
 import { Skeleton } from '../../shared/ui/Skeleton';
 import { makeLocationId } from '../../shared/lib/locationId';
+import { useAliasEditor } from './useAliasEditor';
 import type { Favorite } from '../../shared/types';
 
 interface FavoriteCardProps {
@@ -15,33 +15,14 @@ interface FavoriteCardProps {
 export function FavoriteCard({ favorite, onRemove, onAliasUpdate }: FavoriteCardProps) {
   const navigate = useNavigate();
   const { data, isLoading } = useWeather(favorite.lat, favorite.lon);
-  const [isEditing, setIsEditing] = useState(false);
-  const [alias, setAlias] = useState(favorite.alias);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const { isEditing, alias, setAlias, inputRef, startEditing, confirmAlias, handleKeyDown } =
+    useAliasEditor(favorite.alias, (newAlias) => onAliasUpdate(favorite.id, newAlias));
 
   const handleCardClick = () => {
     if (isEditing) return;
     navigate(`/detail/${makeLocationId(favorite.lat, favorite.lon)}`, {
       state: { locationName: favorite.alias, district: favorite.district },
     });
-  };
-
-  const handleAliasConfirm = () => {
-    const trimmed = alias.trim();
-    if (trimmed) {
-      onAliasUpdate(favorite.id, trimmed);
-    } else {
-      setAlias(favorite.alias);
-    }
-    setIsEditing(false);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') handleAliasConfirm();
-    if (e.key === 'Escape') {
-      setAlias(favorite.alias);
-      setIsEditing(false);
-    }
   };
 
   return (
@@ -56,7 +37,7 @@ export function FavoriteCard({ favorite, onRemove, onAliasUpdate }: FavoriteCard
             ref={inputRef}
             value={alias}
             onChange={(e) => setAlias(e.target.value)}
-            onBlur={handleAliasConfirm}
+            onBlur={confirmAlias}
             onKeyDown={handleKeyDown}
             onClick={(e) => e.stopPropagation()}
             className="w-full rounded border border-blue-300 px-1 text-sm font-semibold outline-none focus:ring-1 focus:ring-blue-300"
@@ -67,7 +48,7 @@ export function FavoriteCard({ favorite, onRemove, onAliasUpdate }: FavoriteCard
               {favorite.alias}
             </p>
             <button
-              onClick={(e) => { e.stopPropagation(); setIsEditing(true); setTimeout(() => inputRef.current?.select(), 0); }}
+              onClick={(e) => { e.stopPropagation(); startEditing(); }}
               className="shrink-0 -my-1 p-1.5 text-gray-300 hover:text-blue-400 transition-colors rounded-md hover:bg-blue-50"
               aria-label="별칭 수정"
             >
