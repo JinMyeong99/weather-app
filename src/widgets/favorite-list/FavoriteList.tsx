@@ -1,14 +1,10 @@
+import { useFavorites } from '../../features/favorites/useFavorites';
 import { FavoriteCard } from './FavoriteCard';
 import { FavoriteListEmpty } from './FavoriteListEmpty';
-import type { Favorite } from '../../shared/types';
 
-interface FavoriteListProps {
-  favorites: Favorite[];
-  onRemove: (id: string) => void;
-  onAliasUpdate: (id: string, alias: string) => void;
-}
+export function FavoriteList() {
+  const { favorites, removeFavorite, updateAlias } = useFavorites();
 
-export function FavoriteList({ favorites, onRemove, onAliasUpdate }: FavoriteListProps) {
   if (favorites.length === 0) {
     return <FavoriteListEmpty />;
   }
@@ -19,8 +15,8 @@ export function FavoriteList({ favorites, onRemove, onAliasUpdate }: FavoriteLis
         <li key={favorite.id}>
           <FavoriteCard
             favorite={favorite}
-            onRemove={onRemove}
-            onAliasUpdate={onAliasUpdate}
+            onRemove={removeFavorite}
+            onAliasUpdate={updateAlias}
           />
         </li>
       ))}

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useFavorites } from '../../features/favorites/useFavorites';
+import { useDevWeather } from '../../shared/lib/useDevWeather';
 import { WeatherDetail } from '../weather-detail/WeatherDetail';
 import { Toast } from '../../shared/ui/Toast';
 import type { District, WeatherData } from '../../shared/types';
@@ -50,6 +51,8 @@ function PlusIcon() {
 
 export function WeatherCard({ locationName, data, lat, lon, district, onClick, className = '' }: WeatherCardProps) {
   const { isFavoriteByLocation, findFavoriteByLocation, addFavorite, removeFavorite } = useFavorites();
+  const { mockIcon } = useDevWeather();
+  const displayIcon = mockIcon ?? data.current.icon;
   const [addError, setAddError] = useState<string | null>(null);
   const favoriteDistrict = district ?? { fullName: `${lat},${lon}`, displayName: locationName, sido: locationName };
 
@@ -96,7 +99,7 @@ export function WeatherCard({ locationName, data, lat, lon, district, onClick, c
         </div>
 
         {addError && <Toast message={addError} onDismiss={() => setAddError(null)} />}
-        <WeatherDetail data={data} />
+        <WeatherDetail data={data} icon={displayIcon} />
       </div>
 
       {/* 날씨 더보기 버튼 */}

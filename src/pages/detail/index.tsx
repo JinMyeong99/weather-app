@@ -10,7 +10,6 @@ import { DetailPagePlaceholder } from './DetailPagePlaceholder';
 import { WeeklyForecast } from '../../widgets/weekly-forecast/WeeklyForecast';
 import { FavoriteList } from '../../widgets/favorite-list/FavoriteList';
 import { ErrorMessage } from '../../shared/ui/ErrorMessage';
-import { useFavorites } from '../../features/favorites/useFavorites';
 import { getWeatherTheme } from '../../shared/lib/getWeatherTheme';
 import { getCachedWeatherIcon, setCachedWeatherIcon } from '../../shared/lib/weatherThemeCache';
 import { useDevWeather } from '../../shared/lib/useDevWeather';
@@ -27,8 +26,6 @@ export const DetailPage = () => {
 
   const coords = parseLocationId(locationId);
   const { data, isLoading, isError } = useWeather(coords?.lat ?? null, coords?.lon ?? null);
-  const { favorites, removeFavorite, updateAlias } = useFavorites();
-
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [locationId]);
@@ -155,11 +152,7 @@ export const DetailPage = () => {
               {/* 즐겨찾기 */}
               <section>
                 <h2 className={`mb-3 text-sm font-semibold ${isDark ? 'text-white/70' : 'text-slate-600'}`}>즐겨찾기</h2>
-                <FavoriteList
-                  favorites={favorites}
-                  onRemove={removeFavorite}
-                  onAliasUpdate={updateAlias}
-                />
+                <FavoriteList />
               </section>
             </>
           )}
