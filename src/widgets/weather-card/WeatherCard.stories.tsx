@@ -1,9 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { WeatherCard } from './WeatherCard';
+import { ErrorMessage } from '../../shared/ui/ErrorMessage';
 import type { WeatherData } from '../../shared/types';
 
 const mockWeatherData: WeatherData = {
-  locationName: '서울특별시 강남구',
+  locationName: '서울특별시 성동구',
   current: {
     temp: 22,
     feelsLike: 21,
@@ -55,10 +56,10 @@ const meta: Meta<typeof WeatherCard> = {
     layout: 'centered',
   },
   args: {
-    locationName: '강남구',
+    locationName: '성동구',
     data: mockWeatherData,
-    lat: 37.5172,
-    lon: 127.0473,
+    lat: 37.5634,
+    lon: 127.0369,
   },
 };
 
@@ -90,10 +91,29 @@ export const WithDetailButton: Story = {
   },
 };
 
+export const NotFound: Story = {
+  name: '정보 없음 (카드 에러 상태)',
+  render: () => (
+    <div style={{ width: '672px' }}>
+      <div className="mb-6 rounded-2xl bg-white p-5 shadow-sm">
+        <ErrorMessage message="해당 장소의 정보가 제공되지 않습니다." />
+      </div>
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          '검색한 장소의 좌표를 찾지 못하거나 날씨 API가 데이터를 제공하지 않을 때 WeatherCard 위치에 표시됩니다. 과제 명세의 "해당 장소의 정보가 제공되지 않습니다." 문구를 카드 형태로 보여줍니다.',
+      },
+    },
+  },
+};
+
 export const RainyDay: Story = {
   name: '비 오는 날',
   args: {
-    locationName: '부산광역시 해운대구',
+    locationName: '서울특별시 성동구 성수동2가',
     data: {
       ...mockWeatherData,
       current: {
