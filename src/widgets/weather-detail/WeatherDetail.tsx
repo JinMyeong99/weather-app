@@ -1,5 +1,4 @@
 import type { WeatherData } from '../../shared/types';
-import { useDevWeather } from '../../shared/lib/useDevWeather';
 import { InfoCard } from './InfoCard';
 import { MainWeatherEmoji } from './MainWeatherEmoji';
 import { SunTimeCard } from './SunTimeCard';
@@ -13,12 +12,12 @@ import {
 
 interface WeatherDetailProps {
   data: WeatherData;
+  /** 상위(WeatherCard)에서 dev mock override가 완료된 최종 날씨 아이콘 */
+  icon: string;
 }
 
-export function WeatherDetail({ data }: WeatherDetailProps) {
+export function WeatherDetail({ data, icon }: WeatherDetailProps) {
   const { current } = data;
-  const { mockIcon } = useDevWeather();
-  const icon = mockIcon ?? current.icon;
 
   const pm10Grade = current.pm10 === null ? getUnavailableGrade() : getPm10Grade(current.pm10);
   const pm25Grade = current.pm25 === null ? getUnavailableGrade() : getPm25Grade(current.pm25);
