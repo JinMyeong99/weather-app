@@ -99,9 +99,9 @@ export function FavoriteCard({ favorite, onRemove, onAliasUpdate }: FavoriteCard
           <div className="text-right">
             <p className="text-xl font-bold text-gray-800">{data.current.temp}°</p>
             <p className="text-xs">
-              <span className="text-blue-400">{data.current.tempMin}°</span>
+              <span className="text-blue-600">{data.current.tempMin}°</span>
               <span className="mx-0.5 text-gray-300">/</span>
-              <span className="text-red-400">{data.current.tempMax}°</span>
+              <span className="text-red-600">{data.current.tempMax}°</span>
             </p>
           </div>
         </div>
