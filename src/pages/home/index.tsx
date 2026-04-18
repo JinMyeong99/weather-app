@@ -80,7 +80,7 @@ export const HomePage = () => {
       <main className="relative z-10 mx-auto max-w-2xl px-4 py-8">
 
         {/* 헤더 */}
-        <h1 className={`mb-6 text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-800'}`}>날씨</h1>
+        <h1 className={`mb-6 text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-800'}`}>오늘의 날씨</h1>
 
         {/* 검색 */}
         <div className="mb-6">
