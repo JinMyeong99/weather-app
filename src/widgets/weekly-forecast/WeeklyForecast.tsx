@@ -10,12 +10,13 @@ function formatForecastDate(date: string) {
 }
 
 function IconWithPop({ icon, pop }: { icon: string; pop: number }) {
+  const isPositivePop = pop > 0;
+
   return (
-    <div className="flex items-center justify-center">
-      <span className="w-8" />
+    <div className="flex min-w-0 items-center justify-center">
       <span className="text-xl leading-none">{getWeatherIcon(icon)}</span>
-      <span className="w-8 text-left text-xs text-blue-400 pl-1.5">
-        {pop > 0 ? `${Math.round(pop * 100)}%` : ''}
+      <span className={`${isPositivePop ? '-ml-0.5' : 'ml-0.5'} translate-y-px text-xs font-medium text-blue-400`}>
+        {Math.round(pop * 100)}%
       </span>
     </div>
   );
