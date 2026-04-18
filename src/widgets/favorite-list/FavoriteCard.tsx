@@ -59,7 +59,7 @@ export function FavoriteCard({ favorite, onRemove, onAliasUpdate }: FavoriteCard
           </div>
         )}
         {data && (
-          <p className="mt-0.5 text-xs capitalize text-gray-400">{data.current.description}</p>
+          <p className="mt-0.5 text-xs capitalize text-gray-500">{data.current.description}</p>
         )}
       </div>
 
