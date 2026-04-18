@@ -18,7 +18,7 @@ export function useSearchBarController({
   onSearchingChange,
   onNotFound,
 }: UseSearchBarControllerParams) {
-  const { query, setQuery, results, searchImmediately } = useDistrictSearch();
+  const { query, setQuery, results, prefetchDistricts, searchImmediately } = useDistrictSearch();
   const [inputValue, setInputValue] = useState(query);
   const [isOpen, setIsOpen] = useState(false);
   const [notFound, setNotFound] = useState(false);
@@ -144,6 +144,7 @@ export function useSearchBarController({
   };
 
   const openResultsIfAvailable = () => {
+    void prefetchDistricts();
     if (results.length > 0) setIsOpen(true);
   };
 

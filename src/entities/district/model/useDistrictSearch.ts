@@ -54,6 +54,13 @@ export function useDistrictSearch() {
 
   const results = useMemo(() => filterDistricts(districts, query), [query, districts]);
 
+  const prefetchDistricts = useCallback(async () => {
+    if (districts.length > 0) return;
+
+    const availableDistricts = await loadDistricts();
+    setDistricts(availableDistricts);
+  }, [districts.length]);
+
   const searchImmediately = useCallback(
     async (keyword: string) => {
       const availableDistricts = districts.length > 0 ? districts : await loadDistricts();
@@ -63,5 +70,5 @@ export function useDistrictSearch() {
     [districts],
   );
 
-  return { query, setQuery, results, searchImmediately };
+  return { query, setQuery, results, prefetchDistricts, searchImmediately };
 }
