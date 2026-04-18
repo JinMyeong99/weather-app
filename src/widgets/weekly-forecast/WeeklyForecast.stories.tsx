@@ -46,7 +46,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       description: {
-        story: '오늘(첫 번째 행)이 파란 배경으로 강조됩니다. 강수확률이 0보다 클 때만 퍼센트가 표시됩니다.',
+        story: '오늘(첫 번째 행)이 파란 배경으로 강조됩니다. 데스크톱과 모바일 모두 강수확률이 항상 표시됩니다.',
       },
     },
   },
