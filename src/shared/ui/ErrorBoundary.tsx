@@ -36,18 +36,20 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       const { pageName = '페이지' } = this.props;
       return (
-        <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-slate-50 px-6 text-center">
+        <div className="flex min-h-screen w-full flex-col items-center justify-center gap-4 bg-slate-50 px-6 text-center">
           <p className="text-5xl">⚠️</p>
           <h1 className="text-xl font-bold text-slate-800">
-            {pageName}를 불러오는 중 문제가 발생했습니다
+            {pageName} 화면을 불러오지 못했습니다
           </h1>
           <p className="text-sm text-slate-500">
             잠시 후 다시 시도하거나 새로고침 해주세요.
           </p>
           {import.meta.env.DEV && this.state.error && (
-            <pre className="max-w-md rounded-lg bg-red-50 p-3 text-left text-xs text-red-700">
-              {this.state.error.message}
-            </pre>
+            <div className="w-full max-w-md rounded-xl bg-red-50 px-4 py-3 text-center text-sm leading-relaxed text-red-500 break-keep wrap-break-word">
+              <pre className="max-h-24 overflow-auto whitespace-pre-wrap wrap-break-word [scrollbar-gutter:stable]">
+                {this.state.error.message}
+              </pre>
+            </div>
           )}
           <button
             onClick={this.handleReset}
