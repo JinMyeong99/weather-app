@@ -86,7 +86,7 @@ Vercel 배포 환경에서 Chrome Lighthouse Mobile 기준으로 확인했습니
 
 ### 현재 위치 날씨
 
-![현재 위치 날씨](./assets/README%20스크린샷/앱%20전체%20흐름.gif)
+![현재 위치 날씨](./assets/README%20스크린샷/현재위치%20날씨.gif)
 
 브라우저 Geolocation API로 좌표를 얻고, Kakao reverse geocoding으로 행정동명을 표시합니다.
 현재 기온, 당일 최저/최고, 체감온도, 습도, 풍속, 미세먼지(PM10/PM2.5), 자외선 지수, 일출/일몰 시간을 한 화면에서 확인할 수 있습니다.
@@ -257,18 +257,18 @@ src/
 
 ## 기술 스택
 
-| 분류 | 기술 |
-|------|------|
-| UI | React 19 · TypeScript |
-| 스타일 | Tailwind CSS v4 |
-| 라우팅 | React Router 7 |
-| 서버 상태 | TanStack Query 5 |
-| 클라이언트 상태 | Zustand 5 |
-| 런타임 검증 | Zod 4 |
-| 컴포넌트 문서 | Storybook 10 |
-| 빌드 | Vite 8 |
-| API | OpenWeather One Call 3.0 · Kakao Local API |
-| 배포 | Vercel |
+| 분류 | 기술 | 선택 이유 |
+|------|------|----------|
+| UI | React 19 · TypeScript | 함수형 컴포넌트 기반 선언적 UI, 타입 안정성 확보 |
+| 스타일 | Tailwind CSS v4 | 반응형·상태별 스타일을 유틸리티 클래스로 빠르게 구성 |
+| 라우팅 | React Router 7 | 홈·상세 페이지 전환, route state로 페이지 간 데이터 전달 |
+| 서버 상태 | TanStack Query 5 | 좌표별 캐싱, 요청 취소, 로딩·에러 상태 일관 관리 |
+| 클라이언트 상태 | Zustand 5 | `persist` 미들웨어로 즐겨찾기 localStorage 영속 단순화 |
+| 런타임 검증 | Zod 4 | 외부 API 응답을 schema로 검증해 타입 단언(`as`) 제거 |
+| 컴포넌트 문서 | Storybook 10 | 컴포넌트 상태·인터랙션을 독립 환경에서 검증 |
+| 빌드 | Vite 8 | 빠른 개발 서버, route 단위 코드 스플리팅 |
+| API | OpenWeather One Call 3.0 · Kakao Local API | 날씨 데이터와 한국 행정구역 좌표 변환 역할 분리 |
+| 배포 | Vercel | GitHub 연동 자동 배포, PR별 Preview 환경 제공 |
 
 ---
 
