@@ -43,31 +43,40 @@ export function drawScene(ctx: CanvasRenderingContext2D, scene: SceneState, time
       drawGroundscape(ctx, scene, time);
       break;
     case 'cloudy-night':
-    case 'overcast':
       drawClouds(ctx, scene, dt);
       drawGroundscape(ctx, scene, time);
       break;
-    case 'rain':
+    case 'overcast-day':
+    case 'overcast-night':
+      drawClouds(ctx, scene, dt);
+      drawGroundscape(ctx, scene, time);
+      break;
+    case 'rain-day':
+    case 'rain-night':
       drawClouds(ctx, scene, dt);
       drawGroundscape(ctx, scene, time);
       drawRain(ctx, scene, dt);
       break;
-    case 'shower':
+    case 'shower-day':
+    case 'shower-night':
       drawClouds(ctx, scene, dt);
       drawGroundscape(ctx, scene, time);
       drawRain(ctx, scene, dt);
       break;
-    case 'thunder':
+    case 'thunder-day':
+    case 'thunder-night':
       drawClouds(ctx, scene, dt);
       drawGroundscape(ctx, scene, time);
       drawRain(ctx, scene, dt);
       drawLightning(ctx, scene, time);
       break;
-    case 'snow':
+    case 'snow-day':
+    case 'snow-night':
       drawGroundscape(ctx, scene, time);
       drawSnow(ctx, scene, time, dt);
       break;
-    case 'fog':
+    case 'fog-day':
+    case 'fog-night':
       drawGroundscape(ctx, scene, time);
       drawFog(ctx, scene, time, dt);
       break;

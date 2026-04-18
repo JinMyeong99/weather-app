@@ -1,4 +1,5 @@
 import type { LightningState, SceneState } from '../types';
+import { isThunderKind } from '../profiles';
 import { clamp, random } from '../utils';
 
 export function createLightning(now: number, reducedMotion: boolean): LightningState {
@@ -28,7 +29,7 @@ function createLightningPath(width: number, height: number) {
 }
 
 function updateLightning(scene: SceneState, time: number) {
-  if (scene.kind !== 'thunder' || time < scene.lightning.nextAt) return;
+  if (!isThunderKind(scene.kind) || time < scene.lightning.nextAt) return;
 
   scene.lightning = {
     activeUntil: time + (scene.reducedMotion ? 0.08 : 0.16),

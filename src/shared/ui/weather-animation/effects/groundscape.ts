@@ -1,4 +1,5 @@
 import type { GroundscapeDecor, GroundscapeItem, GroundWindow, SceneState, WeatherKind } from '../types';
+import { isFogKind, isNightKind, isOvercastKind, isRainKind, isShowerKind, isSnowKind, isThunderKind } from '../profiles';
 import { clamp, getParticleCount, random } from '../utils';
 
 function createGroundWindows(type: GroundscapeItem['type'], itemWidth: number, itemHeight: number): GroundWindow[] {
@@ -142,41 +143,39 @@ export function createGroundDecor(width: number, height: number, groundscape: Gr
 }
 
 function getGroundscapeStyle(kind: WeatherKind) {
-  const isNight = kind === 'clear-night' || kind === 'partly-cloudy-night' || kind === 'cloudy-night';
+  if (isSnowKind(kind)) {
+    return isNightKind(kind)
+      ? { rgb: '15, 23, 42', alpha: 0.4, windowAlpha: 0.48 }
+      : { rgb: '100, 116, 139', alpha: 0.14, windowAlpha: 0 };
+  }
 
-  if (isNight) {
+  if (isThunderKind(kind)) {
+    return isNightKind(kind)
+      ? { rgb: '15, 23, 42', alpha: 0.54, windowAlpha: 0.5 }
+      : { rgb: '15, 23, 42', alpha: 0.5, windowAlpha: 0.36 };
+  }
+
+  if (isNightKind(kind)) {
     return { rgb: '15, 23, 42', alpha: 0.44, windowAlpha: 0.56 };
   }
 
-  if (kind === 'thunder') {
-    return { rgb: '15, 23, 42', alpha: 0.5, windowAlpha: 0.36 };
-  }
-
-  if (kind === 'rain' || kind === 'shower' || kind === 'overcast') {
+  if (isRainKind(kind) || isShowerKind(kind) || isOvercastKind(kind)) {
     return { rgb: '15, 23, 42', alpha: 0.36, windowAlpha: 0.26 };
   }
 
-  if (kind === 'fog') {
+  if (isFogKind(kind)) {
     return { rgb: '15, 23, 42', alpha: 0.2, windowAlpha: 0.14 };
-  }
-
-  if (kind === 'snow') {
-    return { rgb: '100, 116, 139', alpha: 0.14, windowAlpha: 0 };
   }
 
   return { rgb: '100, 116, 139', alpha: 0.16, windowAlpha: 0 };
 }
 
 function shouldShowStreetlights(kind: WeatherKind) {
-  return [
-    'clear-night',
-    'partly-cloudy-night',
-    'cloudy-night',
-    'rain',
-    'shower',
-    'thunder',
-    'fog',
-  ].includes(kind);
+  return isNightKind(kind)
+    || isRainKind(kind)
+    || isShowerKind(kind)
+    || isThunderKind(kind)
+    || isFogKind(kind);
 }
 
 function drawGroundDecor(
@@ -370,7 +369,7 @@ function drawGroundscapeItem(
 
 export function drawGroundscape(ctx: CanvasRenderingContext2D, scene: SceneState, time: number) {
   const style = getGroundscapeStyle(scene.kind);
-  const isSnow = scene.kind === 'snow';
+  const isSnow = isSnowKind(scene.kind);
   const snowLineWidth = clamp(scene.width * 0.002, 1.2, 2.6);
   const groundBaseY = scene.height;
   const buildingBaseY = scene.height - clamp(scene.height * 0.025, 12, 24);

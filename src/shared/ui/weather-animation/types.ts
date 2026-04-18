@@ -5,12 +5,18 @@ export type WeatherKind =
   | 'partly-cloudy-night'
   | 'cloudy-day'
   | 'cloudy-night'
-  | 'overcast'
-  | 'rain'
-  | 'shower'
-  | 'thunder'
-  | 'snow'
-  | 'fog';
+  | 'overcast-day'
+  | 'overcast-night'
+  | 'rain-day'
+  | 'rain-night'
+  | 'shower-day'
+  | 'shower-night'
+  | 'thunder-day'
+  | 'thunder-night'
+  | 'snow-day'
+  | 'snow-night'
+  | 'fog-day'
+  | 'fog-night';
 
 export interface Cloud {
   x: number;
