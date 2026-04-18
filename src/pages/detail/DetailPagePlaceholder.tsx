@@ -1,4 +1,5 @@
 import { Skeleton } from '../../shared/ui/Skeleton';
+import { LocationTitle } from '../../shared/ui/LocationTitle';
 import { WeatherCardPlaceholder } from '../../widgets/weather-card/WeatherCardPlaceholder';
 import { HourlyForecastPlaceholder, FavoriteCardPlaceholder } from '../home/HomePagePlaceholder';
 
@@ -66,7 +67,13 @@ export function DetailPagePlaceholder({ locationName, isDark, onBack }: DetailPa
         >
           ←
         </button>
-        <h1 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-slate-800'}`}>{locationName}</h1>
+        <LocationTitle
+          locationName={locationName}
+          primaryClassName={`min-w-0 truncate text-xl font-bold ${isDark ? 'text-white' : 'text-slate-800'}`}
+          secondaryClassName={`mt-0.5 truncate text-xs font-medium ${isDark ? 'text-white/70' : 'text-slate-500'}`}
+          stackOnDesktop
+          as="h1"
+        />
       </div>
 
       {/* 검색 */}
