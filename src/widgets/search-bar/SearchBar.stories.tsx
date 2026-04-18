@@ -70,6 +70,22 @@ export const WithCurrentLocation: Story = {
   },
 };
 
+export const Mobile: Story = {
+  name: '모바일 320px',
+  render: (args) => (
+    <div style={{ width: '320px', padding: '24px 0 120px' }}>
+      <SearchBar {...args} />
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: '320px 모바일 폭에서 placeholder와 현재 위치 버튼이 겹치지 않는지 확인합니다.',
+      },
+    },
+  },
+};
+
 export const SearchResults: Story = {
   name: '검색 결과 드롭다운',
   parameters: {
