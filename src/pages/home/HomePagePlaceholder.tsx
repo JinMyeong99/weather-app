@@ -13,7 +13,7 @@ export function HourlyForecastPlaceholder() {
       </div>
 
       <div className="overflow-hidden">
-        <div className="mb-1 h-[84px] pt-4">
+        <div className="mb-1 h-21 pt-4">
           <Skeleton className="mx-auto h-10 w-[92%] rounded-full" />
         </div>
         <div className="flex">
@@ -52,10 +52,10 @@ export function FavoriteCardPlaceholder() {
 export function HomePagePlaceholder() {
   return (
     <div className="relative z-10 mx-auto max-w-2xl px-4 py-8">
-      <Skeleton className="mb-6 h-8 w-12" />
+      <Skeleton className="mb-6 h-8 w-24" />
 
       <div className="mb-6">
-        <Skeleton className="h-[46px] w-full rounded-xl" />
+        <Skeleton className="h-11.5 w-full rounded-xl" />
       </div>
 
       <WeatherCardPlaceholder className="mb-6" showMore />

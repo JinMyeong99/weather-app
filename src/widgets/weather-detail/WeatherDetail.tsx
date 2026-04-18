@@ -48,7 +48,7 @@ export function WeatherDetail({ data, icon }: WeatherDetailProps) {
 
       <div className="grid w-full grid-cols-6 gap-2 sm:grid-cols-5">
         <InfoCard label="미세먼지" value={pm10Grade.label} {...toInfoCardStyle(pm10Grade)} className="col-span-2 sm:col-span-1" />
-        <InfoCard label="초미세먼지" value={pm25Grade.label} {...toInfoCardStyle(pm25Grade)} className="col-span-2 sm:col-span-1" />
+        <InfoCard label="초미세먼지" shortLabel="초미세" value={pm25Grade.label} {...toInfoCardStyle(pm25Grade)} className="col-span-2 sm:col-span-1" />
         <InfoCard label="자외선" value={uviGrade.label} {...toInfoCardStyle(uviGrade)} className="col-span-2 sm:col-span-1" />
         <SunTimeCard label="일출" value={current.sunrise} type="sunrise" className="col-span-3 sm:col-span-1" />
         <SunTimeCard label="일몰" value={current.sunset} type="sunset" className="col-span-3 sm:col-span-1" />
