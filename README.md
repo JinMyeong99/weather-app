@@ -342,8 +342,8 @@ npm run build
 |------|----|------|
 | 초기 구조 | [#8](https://github.com/JinMyeong99/weather-app/pull/8) | FSD 구조, 라우터, TanStack Query, Tailwind 초기 세팅 |
 | 날씨 API | [#9](https://github.com/JinMyeong99/weather-app/pull/9) | OpenWeather API 연동과 TanStack Query 캐싱 |
-| 검색 | [#10](https://github.com/JinMyeong99/weather-app/pull/10), [#83](https://github.com/JinMyeong99/weather-app/pull/83) | 행정구역 검색, Enter 즉시 선택, 검색 데이터 prefetch |
-| 즐겨찾기 | [#11](https://github.com/JinMyeong99/weather-app/pull/11) | localStorage 기반 즐겨찾기와 별칭 편집 |
+| 검색 | [#10](https://github.com/JinMyeong99/weather-app/pull/10), [#83](https://github.com/JinMyeong99/weather-app/pull/83), [#106](https://github.com/JinMyeong99/weather-app/pull/106) | 행정구역 검색, Enter 즉시 선택, 검색 데이터 prefetch, 검색 결과 우선순위 개선 |
+| 즐겨찾기 | [#11](https://github.com/JinMyeong99/weather-app/pull/11), [#108](https://github.com/JinMyeong99/weather-app/pull/108) | localStorage 기반 즐겨찾기와 별칭 편집, Zustand selector 기반 구독 범위 정리 |
 | 홈 UI | [#12](https://github.com/JinMyeong99/weather-app/pull/12) | 현재 위치 날씨, 검색, 즐겨찾기 UI |
 | 런타임 검증 | [#45](https://github.com/JinMyeong99/weather-app/pull/45) | Zod 기반 외부 API 응답 검증 |
 | 성능 | [#58](https://github.com/JinMyeong99/weather-app/pull/58) | 번들 스플리팅, API 캐싱, 요청 취소 |
