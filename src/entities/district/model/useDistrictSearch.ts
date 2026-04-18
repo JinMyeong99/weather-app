@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import type { District } from '../../../shared/types';
 
 function parseDistrict(fullName: string): District {
@@ -32,6 +32,15 @@ function loadDistricts(): Promise<District[]> {
   return loadPromise;
 }
 
+function filterDistricts(districts: District[], keyword: string): District[] {
+  const trimmed = keyword.trim();
+  if (trimmed.length < 1) return [];
+
+  return districts
+    .filter((d) => d.fullName.replace(/-/g, '').includes(trimmed) || d.displayName.includes(trimmed))
+    .slice(0, 10);
+}
+
 export function useDistrictSearch() {
   const [query, setQuery] = useState('');
   const [districts, setDistricts] = useState<District[]>(() => cachedDistricts ?? []);
@@ -43,13 +52,16 @@ export function useDistrictSearch() {
     }
   }, [query, districts.length]);
 
-  const results = useMemo(() => {
-    const trimmed = query.trim();
-    if (trimmed.length < 1) return [];
-    return districts
-      .filter((d) => d.fullName.replace(/-/g, '').includes(trimmed) || d.displayName.includes(trimmed))
-      .slice(0, 10);
-  }, [query, districts]);
+  const results = useMemo(() => filterDistricts(districts, query), [query, districts]);
 
-  return { query, setQuery, results };
+  const searchImmediately = useCallback(
+    async (keyword: string) => {
+      const availableDistricts = districts.length > 0 ? districts : await loadDistricts();
+      if (districts.length === 0) setDistricts(availableDistricts);
+      return filterDistricts(availableDistricts, keyword);
+    },
+    [districts],
+  );
+
+  return { query, setQuery, results, searchImmediately };
 }
