@@ -212,17 +212,18 @@ Canvas + `requestAnimationFrame`으로 배경을 단일 레이어에서 처리�
 
 ### 8. Discriminated Union으로 날씨 카드 상태 관리
 
-홈 날씨 카드는 `loading | error | not-found | success` 네 가지 상태를 가집니다.  
+홈 날씨 카드는 `loading | error | success | idle` 네 가지 상태를 가집니다.  
 `status` 필드를 가진 discriminated union 타입으로 정의해 각 상태에서 접근 가능한 데이터를 타입 레벨에서 보장합니다.
 
 ```ts
 type WeatherCardState =
   | { status: 'loading' }
   | { status: 'error'; message: string }
-  | { status: 'not-found' }
-  | { status: 'success'; data: WeatherData; lat: number; lon: number };
+  | { status: 'success'; data: WeatherData; lat: number; lon: number }
+  | { status: 'idle' };
 ```
 
+장소 정보 없음과 API 오류는 `error` 상태의 메시지로 처리하고, 아직 표시할 데이터가 없는 상태는 `idle`로 분리합니다.  
 `cardState.status === 'success'`인 블록 안에서만 `cardState.data`에 접근 가능하므로, 런타임 null 체크 없이 타입 안전성을 유지합니다.
 
 ### 9. Skeleton Placeholder로 레이아웃 안정성 확보
