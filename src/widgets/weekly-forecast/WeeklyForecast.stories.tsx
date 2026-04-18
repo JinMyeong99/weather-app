@@ -52,6 +52,22 @@ export const Default: Story = {
   },
 };
 
+export const MobileDefault: Story = {
+  name: '모바일 320px',
+  render: (args) => (
+    <div style={{ width: '320px' }}>
+      <WeeklyForecast {...args} />
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: '320px 모바일 폭에서 오전/오후/최저·최고 정렬과 강수확률 표시를 확인합니다.',
+      },
+    },
+  },
+};
+
 export const AllRainy: Story = {
   name: '장마 (강수확률 높음)',
   args: {
