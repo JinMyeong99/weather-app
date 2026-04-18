@@ -18,7 +18,7 @@ export function useSearchBarController({
   onSearchingChange,
   onNotFound,
 }: UseSearchBarControllerParams) {
-  const { query, setQuery, results } = useDistrictSearch();
+  const { query, setQuery, results, prefetchDistricts, searchImmediately } = useDistrictSearch();
   const [inputValue, setInputValue] = useState(query);
   const [isOpen, setIsOpen] = useState(false);
   const [notFound, setNotFound] = useState(false);
@@ -33,13 +33,20 @@ export function useSearchBarController({
     setFocusedIndex(-1);
   }, [results]);
 
+  const clearDebounce = () => {
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+      debounceRef.current = null;
+    }
+  };
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const nextValue = e.target.value;
 
     setInputValue(nextValue);
     setNotFound(false);
     onNotFound?.(false);
-    if (debounceRef.current) clearTimeout(debounceRef.current);
+    clearDebounce();
 
     if (nextValue.trim().length === 0) {
       setQuery('');
@@ -77,22 +84,52 @@ export function useSearchBarController({
     }
   };
 
+  const handleEnterSearch = async () => {
+    const keyword = inputValue.trim();
+    if (keyword.length === 0) return;
+
+    clearDebounce();
+    setNotFound(false);
+    onNotFound?.(false);
+
+    if (isOpen && results.length > 0 && query.trim() === keyword) {
+      await handleSelect(results[focusedIndex >= 0 ? focusedIndex : 0]);
+      setFocusedIndex(-1);
+      return;
+    }
+
+    setQuery(keyword);
+    const immediateResults = await searchImmediately(keyword);
+
+    if (immediateResults.length === 0) {
+      setIsOpen(false);
+      setFocusedIndex(-1);
+      setNotFound(true);
+      onNotFound?.(true);
+      return;
+    }
+
+    await handleSelect(immediateResults[0]);
+    setFocusedIndex(-1);
+  };
+
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (!isOpen || results.length === 0) return;
+    if (e.nativeEvent.isComposing) return;
 
     switch (e.key) {
       case 'ArrowDown':
+        if (!isOpen || results.length === 0) return;
         e.preventDefault();
         setFocusedIndex((prev) => Math.min(prev + 1, results.length - 1));
         break;
       case 'ArrowUp':
+        if (!isOpen || results.length === 0) return;
         e.preventDefault();
         setFocusedIndex((prev) => Math.max(prev - 1, -1));
         break;
       case 'Enter':
         e.preventDefault();
-        handleSelect(results[focusedIndex >= 0 ? focusedIndex : 0]);
-        setFocusedIndex(-1);
+        void handleEnterSearch();
         break;
       case 'Escape':
         setIsOpen(false);
@@ -107,6 +144,7 @@ export function useSearchBarController({
   };
 
   const openResultsIfAvailable = () => {
+    void prefetchDistricts();
     if (results.length > 0) setIsOpen(true);
   };
 

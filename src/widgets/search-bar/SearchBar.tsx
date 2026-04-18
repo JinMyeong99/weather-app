@@ -84,7 +84,7 @@ export function SearchBar({ onSelect, onCurrentLocation, onSearchingChange, onNo
 
         <input
           type="text"
-          placeholder="시·구·동 단위로 검색 (예: 종로구, 청운동)"
+          placeholder="지역 검색 (예: 성동구, 성수동)"
           value={inputValue}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
