@@ -24,11 +24,21 @@ export function getWeatherTheme(icon: string): WeatherTheme {
     case '04': return isDay
       ? { gradient: 'bg-[linear-gradient(225deg,#e2e8f0_0%,#94a3b8_46%,#64748b_100%)]', isDark: false }
       : { gradient: 'bg-[linear-gradient(225deg,#64748b_0%,#475569_48%,#374151_100%)]', isDark: true };
-    case '09':
-    case '10': return { gradient: 'bg-gradient-to-br from-slate-600 to-blue-800', isDark: true };
-    case '11': return { gradient: 'bg-gradient-to-br from-slate-800 to-indigo-900', isDark: true };
-    case '13': return { gradient: 'bg-gradient-to-br from-blue-300 to-slate-400', isDark: false };
-    case '50': return { gradient: 'bg-gradient-to-br from-gray-400 to-slate-500', isDark: true };
+    case '09': return isDay
+      ? { gradient: 'bg-gradient-to-br from-slate-600 to-blue-800', isDark: true }
+      : { gradient: 'bg-[linear-gradient(225deg,#1e293b_0%,#1e3a8a_50%,#0f172a_100%)]', isDark: true };
+    case '10': return isDay
+      ? { gradient: 'bg-gradient-to-br from-slate-600 to-blue-800', isDark: true }
+      : { gradient: 'bg-[linear-gradient(225deg,#0f172a_0%,#1e3a8a_48%,#172554_100%)]', isDark: true };
+    case '11': return isDay
+      ? { gradient: 'bg-gradient-to-br from-slate-800 to-indigo-900', isDark: true }
+      : { gradient: 'bg-[linear-gradient(225deg,#030712_0%,#312e81_48%,#111827_100%)]', isDark: true };
+    case '13': return isDay
+      ? { gradient: 'bg-gradient-to-br from-blue-300 to-slate-400', isDark: false }
+      : { gradient: 'bg-[linear-gradient(225deg,#334155_0%,#1e3a8a_48%,#0f172a_100%)]', isDark: true };
+    case '50': return isDay
+      ? { gradient: 'bg-gradient-to-br from-gray-400 to-slate-500', isDark: true }
+      : { gradient: 'bg-[linear-gradient(225deg,#374151_0%,#1f2937_52%,#111827_100%)]', isDark: true };
     default:   return { gradient: 'bg-gradient-to-br from-sky-500 to-blue-600', isDark: true };
   }
 }

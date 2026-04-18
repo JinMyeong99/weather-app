@@ -1,10 +1,9 @@
-import { RAIN_PROFILES } from '../profiles';
+import { getRainProfileKind, RAIN_PROFILES } from '../profiles';
 import type { RainDrop, RainProfile, SceneState, WeatherKind } from '../types';
 import { getParticleCount, random } from '../utils';
 
 function getRainProfile(kind: WeatherKind): RainProfile {
-  if (kind === 'shower' || kind === 'thunder') return RAIN_PROFILES[kind];
-  return RAIN_PROFILES.rain;
+  return RAIN_PROFILES[getRainProfileKind(kind)];
 }
 
 export function createRain(width: number, height: number, reducedMotion: boolean, kind: WeatherKind): RainDrop[] {

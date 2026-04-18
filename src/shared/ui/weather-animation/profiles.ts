@@ -1,6 +1,8 @@
 import type { RainProfile, WeatherKind } from './types';
 
-export const RAIN_PROFILES: Record<'rain' | 'shower' | 'thunder', RainProfile> = {
+type RainProfileKind = 'rain' | 'shower' | 'thunder';
+
+export const RAIN_PROFILES: Record<RainProfileKind, RainProfile> = {
   rain: {
     density: 1,
     length: [14, 30],
@@ -39,18 +41,56 @@ export function getWeatherKind(icon: string): WeatherKind {
     case '03':
       return isNight ? 'cloudy-night' : 'cloudy-day';
     case '04':
-      return 'overcast';
+      return isNight ? 'overcast-night' : 'overcast-day';
     case '09':
-      return 'shower';
+      return isNight ? 'shower-night' : 'shower-day';
     case '10':
-      return 'rain';
+      return isNight ? 'rain-night' : 'rain-day';
     case '11':
-      return 'thunder';
+      return isNight ? 'thunder-night' : 'thunder-day';
     case '13':
-      return 'snow';
+      return isNight ? 'snow-night' : 'snow-day';
     case '50':
-      return 'fog';
+      return isNight ? 'fog-night' : 'fog-day';
     default:
       return isNight ? 'clear-night' : 'clear-day';
   }
+}
+
+export function isNightKind(kind: WeatherKind) {
+  return kind.endsWith('-night');
+}
+
+export function isOvercastKind(kind: WeatherKind) {
+  return kind === 'overcast-day' || kind === 'overcast-night';
+}
+
+export function isRainKind(kind: WeatherKind) {
+  return kind === 'rain-day' || kind === 'rain-night';
+}
+
+export function isShowerKind(kind: WeatherKind) {
+  return kind === 'shower-day' || kind === 'shower-night';
+}
+
+export function isThunderKind(kind: WeatherKind) {
+  return kind === 'thunder-day' || kind === 'thunder-night';
+}
+
+export function isRainEffectKind(kind: WeatherKind) {
+  return isRainKind(kind) || isShowerKind(kind) || isThunderKind(kind);
+}
+
+export function isSnowKind(kind: WeatherKind) {
+  return kind === 'snow-day' || kind === 'snow-night';
+}
+
+export function isFogKind(kind: WeatherKind) {
+  return kind === 'fog-day' || kind === 'fog-night';
+}
+
+export function getRainProfileKind(kind: WeatherKind): RainProfileKind {
+  if (isShowerKind(kind)) return 'shower';
+  if (isThunderKind(kind)) return 'thunder';
+  return 'rain';
 }

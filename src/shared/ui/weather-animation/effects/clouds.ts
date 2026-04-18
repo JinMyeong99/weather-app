@@ -1,4 +1,5 @@
 import type { Cloud, SceneState, WeatherKind } from '../types';
+import { isOvercastKind, isRainKind, isShowerKind, isThunderKind } from '../profiles';
 import { getParticleCount, random } from '../utils';
 
 function getCloudYRange(kind: WeatherKind, height: number): [number, number] {
@@ -10,15 +11,15 @@ function getCloudYRange(kind: WeatherKind, height: number): [number, number] {
     return [height * 0.04, height * 0.42];
   }
 
-  if (kind === 'overcast') {
+  if (isOvercastKind(kind)) {
     return [height * 0.02, height * 0.56];
   }
 
-  if (kind === 'rain' || kind === 'shower') {
+  if (isRainKind(kind) || isShowerKind(kind)) {
     return [height * 0.02, height * 0.3];
   }
 
-  if (kind === 'thunder') {
+  if (isThunderKind(kind)) {
     return [height * 0.02, height * 0.44];
   }
 
@@ -26,7 +27,7 @@ function getCloudYRange(kind: WeatherKind, height: number): [number, number] {
 }
 
 function getCloudLaneCount(kind: WeatherKind) {
-  if (kind === 'partly-cloudy-day' || kind === 'partly-cloudy-night' || kind === 'rain' || kind === 'shower') {
+  if (kind === 'partly-cloudy-day' || kind === 'partly-cloudy-night' || isRainKind(kind) || isShowerKind(kind)) {
     return 2;
   }
 
@@ -49,10 +50,11 @@ function getCloudDistributedPosition(
   const laneCount = getCloudLaneCount(kind);
   const laneIndex = ((index % laneCount) + laneCount) % laneCount;
   const laneHeight = (maxY - minY) / laneCount;
-  const xJitterMin = kind === 'overcast' ? 0.05 : 0.16;
-  const xJitterMax = kind === 'overcast' ? 0.95 : 0.84;
-  const yJitterMin = kind === 'overcast' ? 0.08 : 0.18;
-  const yJitterMax = kind === 'overcast' ? 0.92 : 0.82;
+  const isOvercast = isOvercastKind(kind);
+  const xJitterMin = isOvercast ? 0.05 : 0.16;
+  const xJitterMax = isOvercast ? 0.95 : 0.84;
+  const yJitterMin = isOvercast ? 0.08 : 0.18;
+  const yJitterMax = isOvercast ? 0.92 : 0.82;
 
   return {
     x: bandStartX + columnWidth * columnIndex + random(columnWidth * xJitterMin, columnWidth * xJitterMax),
@@ -61,7 +63,7 @@ function getCloudDistributedPosition(
 }
 
 function areCloudsTooClose(candidate: Cloud, clouds: Cloud[], kind: WeatherKind) {
-  const isOvercast = kind === 'overcast';
+  const isOvercast = isOvercastKind(kind);
   const xFactor = isOvercast ? 0.36 : 0.48;
   const yFactor = isOvercast ? 0.42 : 0.58;
 
@@ -82,11 +84,12 @@ export function createClouds(
 ): Cloud[] {
   const isPartly = kind === 'partly-cloudy-day' || kind === 'partly-cloudy-night';
   const isCloudy = kind === 'cloudy-day' || kind === 'cloudy-night';
-  const isOvercast = kind === 'overcast';
-  const isThunder = kind === 'thunder';
-  const isRainCloud = kind === 'rain' || kind === 'shower';
+  const isOvercast = isOvercastKind(kind);
+  const isThunder = isThunderKind(kind);
+  const isShower = isShowerKind(kind);
+  const isRainCloud = isRainKind(kind) || isShower;
   const count = isRainCloud
-    ? getParticleCount(width, height, kind === 'shower' ? 0.000007 : 0.000005, kind === 'shower' ? 4 : 3, kind === 'shower' ? 6 : 5, reducedMotion)
+    ? getParticleCount(width, height, isShower ? 0.000007 : 0.000005, isShower ? 4 : 3, isShower ? 6 : 5, reducedMotion)
     : isPartly
       ? getParticleCount(width, height, 0.000006, 4, 6, reducedMotion)
       : isCloudy
@@ -98,7 +101,7 @@ export function createClouds(
   const createCloud = (index: number): Cloud => {
     const position = getCloudDistributedPosition(index, count, width, height, kind);
     const scale = isRainCloud
-      ? random(kind === 'shower' ? 0.75 : 0.65, kind === 'shower' ? 1.35 : 1.2)
+      ? random(isShower ? 0.75 : 0.65, isShower ? 1.35 : 1.2)
       : isCloudy
         ? random(0.75, 1.35)
         : isOvercast
@@ -120,7 +123,7 @@ export function createClouds(
       scale,
       speed: speedBase * (reducedMotion ? 0.25 : 1),
       alpha: isRainCloud
-        ? random(kind === 'shower' ? 0.2 : 0.16, kind === 'shower' ? 0.36 : 0.3)
+        ? random(isShower ? 0.2 : 0.16, isShower ? 0.36 : 0.3)
         : isPartly
           ? random(0.2, 0.38)
           : isCloudy
