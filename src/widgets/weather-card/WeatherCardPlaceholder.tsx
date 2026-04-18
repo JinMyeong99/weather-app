@@ -19,7 +19,7 @@ export function WeatherCardPlaceholder({
           <LocationTitle
             locationName={locationName}
             primaryClassName="min-w-0 truncate text-lg font-bold text-slate-700 sm:text-xl"
-            secondaryClassName="mt-0.5 truncate text-xs font-medium text-slate-400 sm:text-sm"
+            secondaryClassName="mt-0.5 truncate text-xs font-medium text-slate-500 sm:text-sm"
             stackOnDesktop
           />
           <Skeleton className="h-9 w-12 shrink-0 translate-x-2 -translate-y-1 rounded-lg sm:translate-x-0 sm:translate-y-0" />

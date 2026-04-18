@@ -82,7 +82,7 @@ export function WeatherCard({ locationName, data, lat, lon, district, onClick, c
           <LocationTitle
             locationName={locationName}
             primaryClassName="min-w-0 truncate text-lg font-bold text-slate-800 sm:text-xl"
-            secondaryClassName="mt-0.5 truncate text-xs font-medium text-slate-400 sm:text-sm"
+            secondaryClassName="mt-0.5 truncate text-xs font-medium text-slate-500 sm:text-sm"
             stackOnDesktop
           />
           <button
