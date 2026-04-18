@@ -3,7 +3,9 @@ import { FavoriteCard } from './FavoriteCard';
 import { FavoriteListEmpty } from './FavoriteListEmpty';
 
 export function FavoriteList() {
-  const { favorites, removeFavorite, updateAlias } = useFavorites();
+  const favorites = useFavorites((s) => s.favorites);
+  const removeFavorite = useFavorites((s) => s.removeFavorite);
+  const updateAlias = useFavorites((s) => s.updateAlias);
 
   if (favorites.length === 0) {
     return <FavoriteListEmpty />;
