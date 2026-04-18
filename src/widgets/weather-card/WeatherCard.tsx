@@ -51,19 +51,20 @@ function PlusIcon() {
 }
 
 export function WeatherCard({ locationName, data, lat, lon, district, onClick, className = '' }: WeatherCardProps) {
-  const { isFavoriteByLocation, findFavoriteByLocation, addFavorite, removeFavorite } = useFavorites();
   const { mockIcon } = useDevWeather();
   const displayIcon = mockIcon ?? data.current.icon;
   const [addError, setAddError] = useState<string | null>(null);
   const favoriteDistrict = district ?? { fullName: `${lat},${lon}`, displayName: locationName, sido: locationName };
+  const favoriteId = useFavorites((s) => s.findFavoriteByLocation(favoriteDistrict, lat, lon)?.id);
+  const addFavorite = useFavorites((s) => s.addFavorite);
+  const removeFavorite = useFavorites((s) => s.removeFavorite);
 
-  const alreadyFavorited = isFavoriteByLocation(favoriteDistrict, lat, lon);
+  const alreadyFavorited = favoriteId !== undefined;
 
   const handleToggleFavorite = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (alreadyFavorited) {
-      const fav = findFavoriteByLocation(favoriteDistrict, lat, lon);
-      if (fav) removeFavorite(fav.id);
+      removeFavorite(favoriteId);
     } else {
       try {
         addFavorite(favoriteDistrict, lat, lon);
