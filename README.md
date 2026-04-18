@@ -319,20 +319,20 @@ npm run build
 
 ## Git 워크플로우
 
-`main ← develop ← feat/fix/refactor/*` 브랜치 전략을 사용합니다.
+`main ← develop ← feature branch` 흐름으로 작업했습니다.
 
 ```
 기능별 Issue 생성
-  → 이슈 번호 포함 브랜치 생성 (예: feat/42-hourly-forecast)
+  → 이슈 번호 또는 작업 유형을 포함한 브랜치 생성
     → PR 생성 (배경·의사결정·변경 파일 포함 상세 작성)
       → develop Merge
         → main 배포
 ```
 
-- GitHub 저장소에서 Merge Commit만 허용해 기능 브랜치 단위 이력을 보존합니다.
+- 주요 기능 PR은 Merge Commit으로 병합해 기능 브랜치 단위 이력을 보존했습니다.
 - PR 본문에 이슈 번호(`Close #N`)를 연결해 이슈-커밋-PR 흐름을 추적합니다.
 
-> PR #38~#48은 저장소 설정 오류로 Squash Merge가 적용되었습니다. 이후 Merge Commit 전략으로 통일했습니다.
+> 일부 초기/중간 PR은 저장소 설정 변경 전후로 브랜치명과 merge 방식이 완전히 동일하지 않을 수 있습니다.
 
 ---
 
