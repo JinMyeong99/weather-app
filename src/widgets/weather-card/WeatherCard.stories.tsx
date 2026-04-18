@@ -91,6 +91,26 @@ export const WithDetailButton: Story = {
   },
 };
 
+export const Mobile: Story = {
+  name: '모바일 320px',
+  args: {
+    locationName: '성수동 (성동구, 서울특별시)',
+    onClick: () => {},
+  },
+  render: (args) => (
+    <div style={{ width: '320px' }}>
+      <WeatherCard {...args} />
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: '320px 모바일 폭에서 위치명 2줄 표시, 찜하기 버튼 위치, 카드 padding을 확인합니다.',
+      },
+    },
+  },
+};
+
 export const NotFound: Story = {
   name: '정보 없음 (카드 에러 상태)',
   render: () => (
