@@ -13,7 +13,7 @@ export function WeatherCardPlaceholder({
 }: WeatherCardPlaceholderProps) {
   return (
     <div className={`rounded-2xl bg-white shadow-lg ${className}`} aria-busy="true">
-      <div className="p-5">
+      <div className="px-4 pt-4 pb-5 sm:p-5">
         <div className="mb-2 flex items-center justify-between gap-3">
           <p className="min-w-0 truncate text-lg font-bold text-slate-700">{locationName}</p>
           <Skeleton className="h-9 w-12 shrink-0 rounded-lg" />

@@ -3,6 +3,7 @@ import { useFavorites } from '../../features/favorites/useFavorites';
 import { useDevWeather } from '../../shared/lib/useDevWeather';
 import { WeatherDetail } from '../weather-detail/WeatherDetail';
 import { Toast } from '../../shared/ui/Toast';
+import { LocationTitle } from '../../shared/ui/LocationTitle';
 import type { District, WeatherData } from '../../shared/types';
 
 interface WeatherCardProps {
@@ -76,12 +77,17 @@ export function WeatherCard({ locationName, data, lat, lon, district, onClick, c
   return (
     <div className={`rounded-2xl bg-white shadow-lg ${className}`}>
       {/* 날씨 본문 */}
-      <div className="p-5">
-        <div className="mb-2 flex items-center justify-between">
-          <p className="text-lg font-bold text-slate-800">{locationName}</p>
+      <div className="px-4 pt-4 pb-5 sm:p-5">
+        <div className="mb-2 flex items-center justify-between gap-3">
+          <LocationTitle
+            locationName={locationName}
+            primaryClassName="min-w-0 truncate text-lg font-bold text-slate-800 sm:text-xl"
+            secondaryClassName="mt-0.5 truncate text-xs font-medium text-slate-400 sm:text-sm"
+            stackOnDesktop
+          />
           <button
             onClick={handleToggleFavorite}
-            className={`group flex h-9 w-12 shrink-0 items-center justify-center transition-colors ${
+            className={`group flex h-9 w-12 shrink-0 translate-x-2 -translate-y-1 items-center justify-center transition-colors sm:translate-x-0 sm:translate-y-0 ${
               alreadyFavorited
                 ? 'text-yellow-400 hover:text-yellow-500'
                 : 'text-gray-400 hover:text-blue-500'
