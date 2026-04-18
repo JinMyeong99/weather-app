@@ -1,4 +1,5 @@
 import { Skeleton } from '../../shared/ui/Skeleton';
+import { LocationTitle } from '../../shared/ui/LocationTitle';
 
 interface WeatherCardPlaceholderProps {
   locationName?: string;
@@ -15,8 +16,13 @@ export function WeatherCardPlaceholder({
     <div className={`rounded-2xl bg-white shadow-lg ${className}`} aria-busy="true">
       <div className="px-4 pt-4 pb-5 sm:p-5">
         <div className="mb-2 flex items-center justify-between gap-3">
-          <p className="min-w-0 truncate text-lg font-bold text-slate-700">{locationName}</p>
-          <Skeleton className="h-9 w-12 shrink-0 rounded-lg" />
+          <LocationTitle
+            locationName={locationName}
+            primaryClassName="min-w-0 truncate text-lg font-bold text-slate-700 sm:text-xl"
+            secondaryClassName="mt-0.5 truncate text-xs font-medium text-slate-400 sm:text-sm"
+            stackOnDesktop
+          />
+          <Skeleton className="h-9 w-12 shrink-0 translate-x-2 -translate-y-1 rounded-lg sm:translate-x-0 sm:translate-y-0" />
         </div>
 
         <div className="flex flex-col items-center gap-3">
