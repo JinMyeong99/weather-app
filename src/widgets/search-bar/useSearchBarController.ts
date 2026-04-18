@@ -40,12 +40,18 @@ export function useSearchBarController({
     }
   };
 
+  const clearNotFound = () => {
+    if (notFound) {
+      setNotFound(false);
+      onNotFound?.(false);
+    }
+  };
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const nextValue = e.target.value;
 
     setInputValue(nextValue);
-    setNotFound(false);
-    onNotFound?.(false);
+    clearNotFound();
     clearDebounce();
 
     if (nextValue.trim().length === 0) {
@@ -89,8 +95,7 @@ export function useSearchBarController({
     if (keyword.length === 0) return;
 
     clearDebounce();
-    setNotFound(false);
-    onNotFound?.(false);
+    clearNotFound();
 
     if (isOpen && results.length > 0 && query.trim() === keyword) {
       await handleSelect(results[focusedIndex >= 0 ? focusedIndex : 0]);
