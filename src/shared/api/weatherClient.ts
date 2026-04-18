@@ -17,8 +17,19 @@ weatherClient.interceptors.request.use((config) => {
 weatherClient.interceptors.response.use(
   (res) => res,
   (err) => {
+    if (axios.isCancel(err) || err?.code === 'ERR_CANCELED') {
+      return Promise.reject(err);
+    }
+
     if (import.meta.env.DEV) {
-      console.error('[API Error]', err.config?.url, err.response?.status, err.response?.data);
+      console.error('[API Error]', {
+        method: err.config?.method?.toUpperCase(),
+        url: err.config?.url,
+        status: err.response?.status,
+        code: err.code,
+        message: err.message,
+        data: err.response?.data,
+      });
     }
 
     return Promise.reject(err);
