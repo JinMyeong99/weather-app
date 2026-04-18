@@ -21,7 +21,9 @@ export function getWeatherTheme(icon: string): WeatherTheme {
     case '03': return isDay
       ? { gradient: 'bg-[linear-gradient(225deg,#bae6fd_0%,#7dd3fc_44%,#94a3b8_100%)]', isDark: false }
       : { gradient: 'bg-gradient-to-br from-indigo-900 to-slate-700', isDark: true };
-    case '04': return { gradient: 'bg-[linear-gradient(225deg,#64748b_0%,#475569_48%,#374151_100%)]', isDark: true };
+    case '04': return isDay
+      ? { gradient: 'bg-[linear-gradient(225deg,#e2e8f0_0%,#94a3b8_46%,#64748b_100%)]', isDark: false }
+      : { gradient: 'bg-[linear-gradient(225deg,#64748b_0%,#475569_48%,#374151_100%)]', isDark: true };
     case '09':
     case '10': return { gradient: 'bg-gradient-to-br from-slate-600 to-blue-800', isDark: true };
     case '11': return { gradient: 'bg-gradient-to-br from-slate-800 to-indigo-900', isDark: true };
