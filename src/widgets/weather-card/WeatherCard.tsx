@@ -12,7 +12,7 @@ interface WeatherCardProps {
   lat: number;
   lon: number;
   district?: District;
-  /** 제공 시 카드 전체가 클릭 가능 (홈 → 상세 이동용) */
+  /** 제공 시 하단 "날씨 더보기" 버튼에서 호출된다. */
   onClick?: () => void;
   className?: string;
 }
